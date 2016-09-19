@@ -11,8 +11,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
     public class FirstPersonController : MonoBehaviour
     {
         [SerializeField] private bool m_IsWalking;
+        [SerializeField] private bool m_IsMoving;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_RunSpeed;
+        [SerializeField] private float m_CrouchSpeed;
+        [SerializeField] private float m_ProneSpeed;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float m_JumpSpeed;
         [SerializeField] private float m_StickToGroundForce;
@@ -41,6 +44,30 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_NextStep;
         private bool m_Jumping;
         private AudioSource m_AudioSource;
+        private bool playerStand;
+        private bool playerCrouch;
+        private bool playerProne;
+        private bool isLean;
+        private Vector3 originalPlayerLocalScale;
+        private float playerHeight;
+        private float auxPlayerHeightA;
+        private float auxPlayerHeightB;
+        private float t;
+        private float t2;
+        private float t3;
+        private float mult;
+        private float originalSpeed;
+        private int auxLean;
+        private float leanAuxA;
+        private float leanAuxB;
+        private float leanPosX;
+        private float oldEulerAnglesZ;
+        private bool backEulerAnglesZ;
+        private ClimbingLadderController climbingController;
+        private Vector3 climbingPosition;
+        private bool climbingLadder;
+
+
 
         // Use this for initialization
         private void Start()
@@ -55,6 +82,26 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+            playerStand = true;
+            playerCrouch = false;
+            playerProne = false;
+            isLean = false;
+            originalPlayerLocalScale = transform.localScale;
+            playerHeight = 1.0f;
+            auxPlayerHeightA = transform.localScale.y;
+            auxPlayerHeightB = transform.localScale.y;
+            t = 0.0f;
+            t2 = 0.0f;
+            t3 = 0.0f;
+            leanAuxA = 0.0f;
+            leanAuxB = 0.0f;
+            leanPosX = 0.0f;
+            oldEulerAnglesZ = 0.0f;
+            backEulerAnglesZ = false;
+            originalSpeed = m_WalkSpeed;
+            auxLean = 0;
+            climbingController = GetComponent<ClimbingLadderController>();
+            climbingLadder = false;
         }
 
 
@@ -63,7 +110,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             RotateView();
             // the jump state needs to read here to make sure it is not missed
-            if (!m_Jump)
+            if (!m_Jump && playerStand && !isLean)
             {
                 m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
             }
@@ -72,23 +119,196 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 StartCoroutine(m_JumpBob.DoBobCycle());
                 PlayLandingSound();
-                m_MoveDir.y = 0f;
+                m_MoveDir.y = 0.0f;
                 m_Jumping = false;
             }
             if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
             {
-                m_MoveDir.y = 0f;
+                m_MoveDir.y = 0.0f;
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+            m_IsMoving = (m_CharacterController.velocity.magnitude > 0);
+
+
+            // o codigo abaixo implementa o crouch e prone
+            if (Input.GetButtonDown("Crouch") && !isLean)
+            {
+                if (!playerCrouch)
+                {
+                    playerCrouch = true;
+                    playerStand = false;
+                    playerProne = false;
+                    auxPlayerHeightA = playerHeight;
+                    auxPlayerHeightB = originalPlayerLocalScale.y / 1.6f;
+                    t = 0.0f;
+                    mult = 4.0f;
+                    m_WalkSpeed = m_CrouchSpeed;
+                }
+                else
+                {
+                    playerCrouch = false;
+                    playerStand = true;
+                    playerProne = false;
+                    auxPlayerHeightA = playerHeight;
+                    auxPlayerHeightB = originalPlayerLocalScale.y;
+                    t = 0.0f;
+                    mult = 4.0f;
+                    m_WalkSpeed = originalSpeed;
+                }
+            }
+
+            if (Input.GetButtonDown("Prone") && !isLean)
+            {
+                if (!playerProne)
+                {
+                    playerCrouch = false;
+                    playerStand = false;
+                    playerProne = true;
+                    auxPlayerHeightA = playerHeight;
+                    auxPlayerHeightB = originalPlayerLocalScale.y / 30;
+                    t = 0.0f;
+                    mult = 4.0f;
+                    m_WalkSpeed = m_ProneSpeed;
+                }
+                else
+                {
+                    playerCrouch = false;
+                    playerStand = true;
+                    playerProne = false;
+                    auxPlayerHeightA = playerHeight;
+                    auxPlayerHeightB = originalPlayerLocalScale.y;
+                    t = 0.0f;
+                    mult = 4.0f;
+                    m_WalkSpeed = originalSpeed;
+                }
+            }
+
+            if(playerHeight != auxPlayerHeightB)
+            {
+                playerHeight = Mathf.Lerp(auxPlayerHeightA, auxPlayerHeightB, t);
+                m_Camera.transform.localPosition = new Vector3(m_Camera.transform.localPosition.x, playerHeight, m_Camera.transform.localPosition.z);
+                t += mult * Time.deltaTime;
+            }
+
+
+            //o codigo abaixo implementa o lean
+            if (Input.GetButton("LeanRight"))
+            {
+                if ((playerStand || playerCrouch) && auxLean >= 0 && !m_IsMoving)
+                {
+                    if (!isLean)
+                    {
+                        leanAuxA = m_Camera.transform.localPosition.x;
+                        m_OriginalCameraPosition = m_Camera.transform.localPosition;
+                        leanAuxB = m_OriginalCameraPosition.x + 1.0f;
+                        t2 = 0.0f;
+                    }
+                    isLean = true;
+                    m_Camera.transform.eulerAngles = new Vector3(m_Camera.transform.eulerAngles.x, m_Camera.transform.eulerAngles.y, Mathf.Lerp(0.0f, -10.0f, t2));
+                    oldEulerAnglesZ = m_Camera.transform.eulerAngles.z;
+                    t2 += 8.0f * Time.deltaTime;
+                    auxLean = 1;
+                }
+            }
+
+            if (Input.GetButton("LeanLeft"))
+            {
+                if ((playerStand || playerCrouch) && auxLean <= 0 && !m_IsMoving)
+                {
+                    if (!isLean)
+                    {
+                        leanAuxA = m_Camera.transform.localPosition.x;
+                        m_OriginalCameraPosition = m_Camera.transform.localPosition;
+                        leanAuxB = m_OriginalCameraPosition.x + -1.0f;
+                        t2 = 0.0f;
+                    }
+                    isLean = true;
+                    m_Camera.transform.eulerAngles = new Vector3(m_Camera.transform.eulerAngles.x, m_Camera.transform.eulerAngles.y, Mathf.Lerp(0.0f, 10.0f, t2));
+                    oldEulerAnglesZ = m_Camera.transform.eulerAngles.z;
+                    t2 += 8.0f * Time.deltaTime;
+                    auxLean = -1;
+                }
+            }
+
+            if (Input.GetButtonUp("LeanLeft") || Input.GetButtonUp("LeanRight"))
+            {
+                if (!Input.GetButton("LeanLeft") && !Input.GetButton("LeanRight") && auxLean != 0.0f)
+                {
+                    isLean = false;
+                    t2 = 0.0f;
+                    leanAuxA = m_Camera.transform.localPosition.x;
+                    leanAuxB = m_OriginalCameraPosition.x;
+                    backEulerAnglesZ = true;
+                }
+            }
+
+            if(backEulerAnglesZ && !isLean)
+            {
+                if(oldEulerAnglesZ > 300.0f)
+                {
+                    m_Camera.transform.eulerAngles = new Vector3(m_Camera.transform.eulerAngles.x, m_Camera.transform.eulerAngles.y, Mathf.Lerp(oldEulerAnglesZ, 360.0f, t2));
+                }
+                else
+                {
+                    m_Camera.transform.eulerAngles = new Vector3(m_Camera.transform.eulerAngles.x, m_Camera.transform.eulerAngles.y, Mathf.Lerp(oldEulerAnglesZ, 0.0f, t2));
+                }
+
+                t2 += 8.0f * Time.deltaTime;
+                if(m_Camera.transform.eulerAngles.z == 0.0f)
+                {
+                    oldEulerAnglesZ = 0.0f;
+                    backEulerAnglesZ = false;
+                }
+            }
+
+            if (leanPosX != leanAuxB)
+            {
+                leanPosX = Mathf.Lerp(leanAuxA, leanAuxB, t3);
+                m_Camera.transform.localPosition = new Vector3(leanPosX, m_Camera.transform.localPosition.y, m_Camera.transform.localPosition.z);
+                t3 += 12.0f * Time.deltaTime;
+            }
+            else
+            {
+                t3 = 0.0f;
+            }
+
+            if(m_Camera.transform.localPosition.x == 0.0f)
+            {
+                auxLean = 0;
+                isLean = false;
+            }
+
+
+            // o codigo abaixo move o jogador para a posicao de subir ou descer a escada
+            if (climbingLadder)
+            {
+                float step = Time.deltaTime * 5.0f;
+                transform.position = Vector3.MoveTowards(transform.position, climbingPosition, step);
+                if (transform.position.Equals(climbingPosition))
+                {
+                    climbingLadder = false;
+                    climbingController.isClimbing = true;
+                    climbingController.pressedButton = false;
+                }
+            }
+
+
+
         }
+
+
+
 
 
         private void PlayLandingSound()
         {
-            m_AudioSource.clip = m_LandSound;
-            m_AudioSource.Play();
-            m_NextStep = m_StepCycle + .5f;
+            if (playerStand && (playerHeight == auxPlayerHeightB))
+            {
+                m_AudioSource.clip = m_LandSound;
+                m_AudioSource.Play();
+                m_NextStep = m_StepCycle + .5f;
+            }
         }
 
 
@@ -162,7 +382,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void PlayFootStepAudio()
         {
-            if (!m_CharacterController.isGrounded)
+            if (!m_CharacterController.isGrounded || !playerStand)
             {
                 return;
             }
@@ -179,25 +399,21 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void UpdateCameraPosition(float speed)
         {
-            Vector3 newCameraPosition;
+            //Vector3 newCameraPosition;
             if (!m_UseHeadBob)
             {
                 return;
             }
-            if (m_CharacterController.velocity.magnitude > 0 && m_CharacterController.isGrounded)
+            if (m_CharacterController.velocity.magnitude > 0 && m_CharacterController.isGrounded && playerStand)
             {
                 m_Camera.transform.localPosition =
                     m_HeadBob.DoHeadBob(m_CharacterController.velocity.magnitude +
                                       (speed*(m_IsWalking ? 1f : m_RunstepLenghten)));
-                newCameraPosition = m_Camera.transform.localPosition;
-                newCameraPosition.y = m_Camera.transform.localPosition.y - m_JumpBob.Offset();
+               
             }
-            else
-            {
-                newCameraPosition = m_Camera.transform.localPosition;
-                newCameraPosition.y = m_OriginalCameraPosition.y - m_JumpBob.Offset();
-            }
-            m_Camera.transform.localPosition = newCameraPosition;
+            //newCameraPosition = m_Camera.transform.localPosition;
+            //newCameraPosition.y = m_OriginalCameraPosition.y - m_JumpBob.Offset();
+            //m_Camera.transform.localPosition = newCameraPosition;
         }
 
 
@@ -212,11 +428,19 @@ namespace UnityStandardAssets.Characters.FirstPerson
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            if(playerStand)
+            {
+                m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            }
+            
 #endif
             // set the desired speed to be walking or running
             speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
-            m_Input = new Vector2(horizontal, vertical);
+
+            if (!isLean)
+            {
+                m_Input = new Vector2(horizontal, vertical);
+            }
 
             // normalize input if it exceeds 1 in combined length:
             if (m_Input.sqrMagnitude > 1)
@@ -254,6 +478,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 return;
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
+        }
+
+        public void movePlayerToLadderDownstairs(Transform climbTransform)
+        {
+            climbingPosition = climbTransform.position;
+            climbingLadder = true;
+        }
+
+        public void movePlayerToLadderUpstairs(Transform climbPosition)
+        {
+
         }
     }
 }
