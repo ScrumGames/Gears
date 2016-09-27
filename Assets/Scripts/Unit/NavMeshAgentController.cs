@@ -1,15 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-public class NavMeshAgentController : MonoBehaviour {
+[RequireComponent(typeof(NavMeshAgent))]
+public class NavMeshAgentController : MonoBehaviour 
+{
+	public Action OnReachDestination;
+	private NavMeshAgent navMeshAgent;
+	private int areaMask;
+	private bool reachDestination;
 
-	// Use this for initialization
-	void Start () {
-	
+	private void Awake()
+	{
+		navMeshAgent = GetComponent<NavMeshAgent> ();
+		areaMask = navMeshAgent.areaMask;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public void SetDestination(Vector3 targetDestination)
+	{
+		NavMeshHit navMeshHit;
+		NavMesh.SamplePosition (targetDestination, out navMeshHit, 2.0f, areaMask);
+
+		if (!navMeshHit.hit)
+			return;
+
+		reachDestination = false;
+
+		navMeshAgent.SetDestination (navMeshHit.position);
+
+		StopCoroutine (CheckDestination ());
+		StartCoroutine (CheckDestination ());
+	}
+
+	private IEnumerator CheckDestination()
+	{
+		while (!reachDestination) 
+		{
+			if (navMeshAgent.pathPending) 
+			{
+				if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance) 
+				{
+					if (!navMeshAgent.hasPath || Mathf.Abs (navMeshAgent.velocity.sqrMagnitude) < float.Epsilon) 
+					{
+						reachDestination = true;
+
+						if (OnReachDestination != null)
+							OnReachDestination ();
+							
+					}
+				}
+			}
+			yield return new WaitForSeconds (0.1f);
+		}
+
 	}
 }
