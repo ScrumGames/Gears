@@ -6,9 +6,9 @@ public class EnemySpawner : MonoBehaviour
 {
 	[SerializeField] private float _spawNewEnemyInterval = 5.0f;
 	[SerializeField] private int _maxEnemies = 10;
-	[SerializeField] private BaseEnemy _enemyPrefab;
+	[SerializeField] private GameObject[] _enemies;
 
-	private List<BaseEnemy> _aliveEnemies = new List<BaseEnemy>();
+	private List<GameObject> _aliveEnemies = new List<GameObject>();
 	private bool _alive;
 
 	private void Start()
@@ -40,12 +40,11 @@ public class EnemySpawner : MonoBehaviour
 
 	private void SpawNewEnemy()
 	{
-		BaseEnemy enemyClone = Instantiate (_enemyPrefab);
+		GameObject enemyClone = Instantiate (_enemies[Random.Range(0,_enemies.Length)]);
 		enemyClone.transform.SetParent (this.transform);
 		enemyClone.transform.localPosition = Vector3.zero;
 
 		_aliveEnemies.Add (enemyClone);
-
 
 	}
 

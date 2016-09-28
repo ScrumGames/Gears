@@ -152,6 +152,34 @@ Transform:
   - {fileID: 920040514}
   - {fileID: 1229053099}
   m_Father: {fileID: 923516764}
+  m_RootOrder: 1
+--- !u!1 &315540816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 315540817}
+  m_Layer: 0
+  m_Name: Enemy Warper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &315540817
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 315540816}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 923516764}
   m_RootOrder: 0
 --- !u!1 &360753095
 GameObject:
@@ -494,6 +522,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
+  - {fileID: 315540817}
   - {fileID: 243280949}
   - {fileID: 1405716092}
   m_Father: {fileID: 0}
@@ -606,7 +635,7 @@ GameObject:
   - 4: {fileID: 1405716092}
   - 114: {fileID: 1405716093}
   m_Layer: 0
-  m_Name: 'Enemy Spawn Position '
+  m_Name: Enemy Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -624,7 +653,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 923516764}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &1405716093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -636,10 +665,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be1795752928248cd9f3eeda03c8726e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawNewEnemyInterval: 5
+  _spawNewEnemyInterval: 2
   _maxEnemies: 10
-  _enemyPrefab: {fileID: 114000012096583672, guid: e770f669fb18b4a1283c43b257c5a451,
-    type: 2}
+  _enemies:
+  - {fileID: 1000013031745558, guid: 0cbd79b68bf1846fdb011c18beeada7e, type: 2}
+  - {fileID: 1000013680700386, guid: c7f1c96d0ba9c479a9ff66f6404054a1, type: 2}
+  - {fileID: 1000010968286072, guid: 91084eed13f344a2a88013847cac6b54, type: 2}
+  - {fileID: 1000013753902994, guid: 78697661dc3de4a989eab5fff638aca8, type: 2}
 --- !u!1 &1730594509
 GameObject:
   m_ObjectHideFlags: 0

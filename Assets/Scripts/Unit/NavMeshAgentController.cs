@@ -36,7 +36,7 @@ public class NavMeshAgentController : MonoBehaviour
 	{
 		while (!reachDestination) 
 		{
-			if (navMeshAgent.pathPending) 
+			if (!navMeshAgent.pathPending) 
 			{
 				if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance) 
 				{
@@ -52,6 +52,16 @@ public class NavMeshAgentController : MonoBehaviour
 			}
 			yield return new WaitForSeconds (0.1f);
 		}
+	}
 
+	public void WarpPosition(Vector3 targetPosition)
+	{
+		NavMeshHit navMeshHit;
+		NavMesh.SamplePosition(targetPosition, out navMeshHit, 2.0f, areaMask);
+
+		if (!navMeshHit.hit)
+			return;
+
+		navMeshAgent.Warp(navMeshHit.position);
 	}
 }
