@@ -1,10 +1,9 @@
 ﻿using UnityEngine; 
 using System.Collections;
-using UnityStandardAssets.Characters.FirstPerson;
 
 public class ClimbingLadderController : MonoBehaviour {
 
-    [SerializeField] private UnityEngine.UI.Text msgText;
+ /*   [SerializeField] private UnityEngine.UI.Text msgText;
 
     // Player
     private FirstPersonController Player;
@@ -133,5 +132,5 @@ public class ClimbingLadderController : MonoBehaviour {
                 isRoofColliding = false;
                 break;
         }
-    }
+    }*/
 }

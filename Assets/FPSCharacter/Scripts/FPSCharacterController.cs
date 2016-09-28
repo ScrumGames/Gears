@@ -34,26 +34,37 @@ public class FPSCharacterController : MonoBehaviour
     [SerializeField]
     private LayerMask _groundLayerMask;
     [SerializeField]
-    private float _distanceToGrounded = 1.04f;
+    private float _distanceToGrounded = 1.05f;
     [SerializeField]
     private float _crounchHeight = 0.3f;
     [SerializeField]
     private float _proneHeight = 0.05f;
     [SerializeField]
     [Range(1, 10)]
-    private int _CrouchAndProneSmooth = 5;
+    private int _CrouchProneSmooth = 5;
+    [Range(0, 2)]
+    [SerializeField]
+    private float _leanScale = 0.5f;
+    [Range(0, 90)]
+    [SerializeField]
+    private int _leanAngle = 15;
+    [Range(1, 30)]
+    [SerializeField]
+    private int _leanSmooth = 10;
 
     private float _axisXInput;
     private float _axisYInput;
     private float _verticalInput;
     private float _horizontalInput;
+    private float _maxInputValue;
     private float _runInput;
     private float _jumpInput;
+    private float _leanInput;
     private float _standHeight;
-    private float _rotationX;
-    private float _rotationY;
-    private float _currentRotationX;
-    private float _currentRotationY;
+    private float _angleX;
+    private float _angleY;
+    private float _currentAngleX;
+    private float _currentAngleY;
     private float _forwardBackMovement;
     private float _rightLeftMovement;
     private bool _isCrouch;
@@ -61,7 +72,10 @@ public class FPSCharacterController : MonoBehaviour
     private bool _isStand;
     private bool _isJump;
     private float _crouchProneTarget;
-    private float _cameraCurrentPosY;
+    private float _leanTarget;
+    private float _leanAngleTarget;
+    private float _leanPositionLerpInterpolation;
+    private float _leanAngleLerpInterpolation;
 
     private Transform _cameraTransform;
     private Rigidbody _rigidbody;
@@ -70,8 +84,8 @@ public class FPSCharacterController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         _cameraTransform = transform.GetChild(0).transform;
-        _currentRotationY = transform.rotation.y;
-        _currentRotationX = _cameraTransform.localRotation.x;
+        _currentAngleY = transform.rotation.y;
+        _currentAngleX = _cameraTransform.localRotation.x;
         _rigidbody = GetComponent<Rigidbody>();
         _isCrouch = false;
         _isProne = false;
@@ -79,6 +93,7 @@ public class FPSCharacterController : MonoBehaviour
         _isJump = false;
         _standHeight = _cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
+        _maxInputValue = 0.1f;
     }
 
     void Update()
@@ -88,10 +103,12 @@ public class FPSCharacterController : MonoBehaviour
         Crouch();
         Prone();
         CrouchProneSmooth();
+        //Lean();
     }
 
     void FixedUpdate()
     {
+        DragController();
         PlayerMovement();
         Jump();
     }
@@ -104,68 +121,83 @@ public class FPSCharacterController : MonoBehaviour
         _runInput = Input.GetAxisRaw("Run");
         _verticalInput = Input.GetAxis("Vertical");
         _horizontalInput = Input.GetAxis("Horizontal");
+        _leanInput = Input.GetAxisRaw("Lean");
     }
 
     private void PlayerLook()
     {
-        _rotationY += _axisXInput * _lookSensitivity * Time.deltaTime;
-        _rotationX -= _axisYInput * _lookSensitivity * Time.deltaTime;
+        _angleY += _axisXInput * _lookSensitivity * Time.deltaTime;
+        _angleX -= _axisYInput * _lookSensitivity * Time.deltaTime;
 
-        _rotationX = Mathf.Clamp(_rotationX, -90.0f, 90.0f);
+        _angleX = Mathf.Clamp(_angleX, -90.0f, 90.0f);
 
-        _currentRotationY = Mathf.Lerp(_currentRotationY, _rotationY, 1f / _lookSmooth);
-        _currentRotationX = Mathf.Lerp(_currentRotationX, _rotationX, 1f / _lookSmooth);
+        _currentAngleY = Mathf.Lerp(_currentAngleY, _angleY, 1f / _lookSmooth);
+        _currentAngleX = Mathf.Lerp(_currentAngleX, _angleX, 1f / _lookSmooth);
 
-        transform.rotation = Quaternion.Euler(new Vector3(0, _currentRotationY, 0));
-        _cameraTransform.localRotation = Quaternion.Euler(new Vector3(_currentRotationX, 0, 0));
+        Vector3 temp = transform.localEulerAngles;
+        temp[1] = _currentAngleY;
+        transform.localEulerAngles = temp;
+
+        temp = _cameraTransform.localEulerAngles;
+        temp[0] = _currentAngleX;
+        _cameraTransform.localEulerAngles = temp;
     }
 
     private void PlayerMovement()
     {
-        _forwardBackMovement = _verticalInput * Time.deltaTime;
-        _rightLeftMovement = _horizontalInput * Time.deltaTime;
-
-        
-        if (_isStand)
+        if ((_verticalInput != 0f || _horizontalInput != 0f) && !_isJump)
         {
-            if (_forwardBackMovement > 0)
-                _forwardBackMovement = _forwardBackMovement * _forwardSpeed;
+            _verticalInput = Mathf.Clamp(_verticalInput, -_maxInputValue, _maxInputValue);
+            _horizontalInput = Mathf.Clamp(_horizontalInput, -_maxInputValue, _maxInputValue);
+
+            if (_isStand)
+            {
+                if (_verticalInput > 0f)
+                    _forwardBackMovement = _verticalInput * _forwardSpeed;
+                else
+                    _forwardBackMovement = _verticalInput * _backSpeed;
+
+                _rightLeftMovement = _horizontalInput * _strafeSpeed;
+
+                if (_runInput > 0f && _verticalInput > 0f)
+                {
+                    _forwardBackMovement = _forwardBackMovement * _runSpeedMultiplier;
+                    _rightLeftMovement = _rightLeftMovement * _runSpeedMultiplier;
+                }
+            }
+            else if (_isCrouch)
+            {
+                _forwardBackMovement = _verticalInput * _crouchSpeed;
+                _rightLeftMovement = _horizontalInput * _crouchSpeed;
+            }
             else
-                _forwardBackMovement = _forwardBackMovement * _backSpeed;
+            {
+                _forwardBackMovement = _verticalInput * _proneSpeed;
+                _rightLeftMovement = _horizontalInput * _proneSpeed;
+            }
 
-            _rightLeftMovement = _rightLeftMovement * _strafeSpeed;
+            _rigidbody.AddRelativeForce(_rightLeftMovement, 0f, _forwardBackMovement, ForceMode.VelocityChange);
+           // _rigidbody.velocity = new Vector3(_rightLeftMovement, 0, _forwardBackMovement);
         }
-        else if (_isCrouch)
-        {
-            _forwardBackMovement = _forwardBackMovement * _crouchSpeed;
-            _rightLeftMovement = _rightLeftMovement * _crouchSpeed;
-        }
-        else
-        {
-            _forwardBackMovement = _forwardBackMovement * _proneSpeed;
-            _rightLeftMovement = _rightLeftMovement * _proneSpeed;
-        }
-
-        if (_runInput > 0 && _forwardBackMovement > 0 && _isStand)
-        {
-            _forwardBackMovement = _forwardBackMovement * _runSpeedMultiplier;
-            _rightLeftMovement = _rightLeftMovement * _runSpeedMultiplier;
-        }
-
-        //_rigidbody.AddRelativeForce(_rightLeftMovement * 10000f, 0, _forwardBackMovement * 10000f, ForceMode.Force);
-        transform.Translate(_rightLeftMovement, 0, _forwardBackMovement);
     }
 
-    private void Jump()
+    private void DragController()
+    {
+        if (_isJump || _rigidbody.velocity.sqrMagnitude < 0.01f)
+            _rigidbody.drag = 0f;
+        else
+            _rigidbody.drag = 5f;
+    }
+
+    private void Jump() //arrumar o pulo continuo, colocar um delay
     {
         if (Grounded())
             _isJump = false;
-
-        if(_jumpInput > 0 && Grounded() && _isStand && !_isJump)
-        {
-            _rigidbody.AddForce(0, _jumpVelocity, 0, ForceMode.VelocityChange);
+        else
             _isJump = true;
-        }
+
+        if (_jumpInput > 0f && _isStand && !_isJump)
+            _rigidbody.AddForce(0f, _jumpVelocity, 0f, ForceMode.VelocityChange);
     }
 
     private bool Grounded()
@@ -217,9 +249,51 @@ public class FPSCharacterController : MonoBehaviour
     {
         if (_cameraTransform.localPosition.y != _crouchProneTarget)
         {
-            _cameraCurrentPosY = Mathf.Lerp(_cameraTransform.localPosition.y, _crouchProneTarget, _CrouchAndProneSmooth * Time.deltaTime);
+            float _cameraCurrentPosY = Mathf.Lerp(_cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
             _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x, _cameraCurrentPosY, _cameraTransform.localPosition.z);
         }
+    }
+
+    private void Lean()
+    {
+        if (_leanInput != 0f)
+        {
+            if (_leanInput > 0f)
+            {
+                _leanTarget = _leanScale;
+                _leanAngleTarget = -_leanAngle;
+            }
+            else
+            {
+                _leanTarget = -_leanScale;
+                _leanAngleTarget = _leanAngle;
+            }
+        }
+        else
+        {
+            _leanTarget = 0f;
+            _leanAngleTarget = 0f;
+        }
+
+        if (_cameraTransform.localPosition.x != _leanTarget)
+        {
+            float _cameraCurrentPosX = Mathf.Lerp(_cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
+            _cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, _cameraTransform.localPosition.y, _cameraTransform.localPosition.z);
+            _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime;
+        }
+        else
+            _leanPositionLerpInterpolation = 0f;
+
+        if(_cameraTransform.localEulerAngles.z != _leanAngleTarget)
+        {
+            float _cameraCurrentAngle = Mathf.Lerp(_cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
+            _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
+            _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime;
+            Debug.Log(_cameraTransform.localEulerAngles.z);
+        }
+        else
+            _leanAngleLerpInterpolation = 0f;
+
     }
 
 }
