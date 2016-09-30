@@ -1,28 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(NavMeshAgentController))]
 public class EnemyWarper : MonoBehaviour 
 {
-	[SerializeField] NavMeshAgentController _navMeshAgentController;
-	[SerializeField] GameObject[] _enemies;
-
-	private void Awake()
-	{
-		_navMeshAgentController = GetComponent<NavMeshAgentController> ();
-	}
+	[SerializeField] private GameObject[] _enemies;
+	[SerializeField] private int _enemySpawNumber;
 
 	private void Start()
 	{
-		WarperEnemies ();
-	}
 
-	private void WarperEnemies()
-	{
-		for (int i = 0; i >= _enemies.Length; i++) 
+		for (int i = 0; i < _enemySpawNumber ; i++)
 		{
-			
+			GameObject enemyClone = Instantiate (_enemies [Random.Range (0, _enemies.Length)]);
+			enemyClone.transform.SetParent (this.transform);
+			enemyClone.transform.localPosition = new Vector3(Random.Range (-25.0f, 25.0f), 0, Random.Range (-25.0f, 25.0f));
 		}
 	}
+
+
 
 }

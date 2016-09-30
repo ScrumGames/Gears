@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameplayController : MonoBehaviour 
+public class PlayerSpawner : MonoBehaviour 
 {
 	[SerializeField] private Transform _playerSpawnPositionRoot;
 	[SerializeField] private GameObject _playerPrefab;

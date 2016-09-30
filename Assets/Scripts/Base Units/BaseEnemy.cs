@@ -13,25 +13,35 @@ public class BaseEnemy : MonoBehaviour
 
 	private void Start()
 	{
-		OnReachDestination ();
+		Initialize ();
+	}
+
+	private void Initialize()
+	{
+		Vector3 initialPosition = new Vector3 (Random.Range(-25.0f,25.0f),0,Random.Range(-25.0f,25.0f)); 
+		navMeshAgentController.SetDestination (initialPosition);
+
+		SeekDestination ();
 	}
 
 	private void OnEnable()
 	{
-		navMeshAgentController.OnReachDestination += OnReachDestination;
+		navMeshAgentController.OnReachDestination += SeekDestination;
 	}
 
 	private void OnDisable()
 	{
-		navMeshAgentController.OnReachDestination -= OnReachDestination;
+		navMeshAgentController.OnReachDestination -= SeekDestination;
 	}
 
-	private void OnReachDestination()
+	private void SeekDestination()
 	{
 		Vector3 randomPosition = new Vector3(Random.Range(-25.0f,25.0f),0,Random.Range(-25.0f,25.0f));
 		navMeshAgentController.SetDestination (randomPosition);
 			
 	}
+
+
 
 
 
