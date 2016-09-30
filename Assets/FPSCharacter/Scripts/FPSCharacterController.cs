@@ -6,22 +6,25 @@ public class FPSCharacterController : MonoBehaviour
 
     [SerializeField]
     [Range (1, 50)]
-    private int _forwardSpeed = 5;
+    private int _forwardSpeed = 7;
     [SerializeField]
     [Range(1, 50)]
-    private int _backSpeed = 3;
+    private int _backSpeed = 6;
     [SerializeField]
     [Range(1, 50)]
-    private int _strafeSpeed = 4;
+    private int _strafeSpeed = 7;
     [SerializeField]
     [Range(0, 10)]
-    private float _crouchSpeed = 2;
+    private float _crouchSpeed = 3;
     [SerializeField]
     [Range(0, 10)]
-    private float _proneSpeed = 0.8f;
+    private float _proneSpeed = 2;
     [SerializeField]
     [Range(1, 10)]
     private int _runSpeedMultiplier = 2;
+    [SerializeField]
+    [Range(1, 20)]
+    private int _characterDrag = 7;
     [SerializeField]
     [Range(50, 500)]
     private int _lookSensitivity = 180;
@@ -30,27 +33,27 @@ public class FPSCharacterController : MonoBehaviour
     private int _lookSmooth = 4;
     [SerializeField]
     [Range(1, 30)]
-    private int _jumpVelocity = 4;
+    private int _jumpVelocity = 5;
     [SerializeField]
     private LayerMask _groundLayerMask;
     [SerializeField]
     private float _distanceToGrounded = 1.05f;
     [SerializeField]
-    private float _crounchHeight = 0.3f;
+    private float _crounchHeight = 0.1f;
     [SerializeField]
-    private float _proneHeight = 0.05f;
+    private float _proneHeight = -0.7f;
     [SerializeField]
     [Range(1, 10)]
     private int _CrouchProneSmooth = 5;
     [Range(0, 2)]
     [SerializeField]
-    private float _leanScale = 0.5f;
+    private float _leanDisplacement = 0.5f;
     [Range(0, 90)]
     [SerializeField]
-    private int _leanAngle = 15;
-    [Range(1, 30)]
+    private int _leanAngle = 10;
+    [Range(1, 50)]
     [SerializeField]
-    private int _leanSmooth = 10;
+    private int _leanSmooth = 15;
 
     private float _axisXInput;
     private float _axisYInput;
@@ -76,6 +79,7 @@ public class FPSCharacterController : MonoBehaviour
     private float _leanAngleTarget;
     private float _leanPositionLerpInterpolation;
     private float _leanAngleLerpInterpolation;
+    private int _canLean;
 
     private Transform _cameraTransform;
     private Rigidbody _rigidbody;
@@ -94,6 +98,7 @@ public class FPSCharacterController : MonoBehaviour
         _standHeight = _cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
         _maxInputValue = 0.1f;
+        _canLean = 0;
     }
 
     void Update()
@@ -103,7 +108,7 @@ public class FPSCharacterController : MonoBehaviour
         Crouch();
         Prone();
         CrouchProneSmooth();
-        //Lean();
+        Lean();
     }
 
     void FixedUpdate()
@@ -176,8 +181,13 @@ public class FPSCharacterController : MonoBehaviour
                 _rightLeftMovement = _horizontalInput * _proneSpeed;
             }
 
+            if (_verticalInput != 0f && _horizontalInput != 0f)
+            {
+                _forwardBackMovement = _forwardBackMovement * 0.8f;
+                _rightLeftMovement = _rightLeftMovement * 0.8f;
+            }
+
             _rigidbody.AddRelativeForce(_rightLeftMovement, 0f, _forwardBackMovement, ForceMode.VelocityChange);
-           // _rigidbody.velocity = new Vector3(_rightLeftMovement, 0, _forwardBackMovement);
         }
     }
 
@@ -186,7 +196,7 @@ public class FPSCharacterController : MonoBehaviour
         if (_isJump || _rigidbody.velocity.sqrMagnitude < 0.01f)
             _rigidbody.drag = 0f;
         else
-            _rigidbody.drag = 5f;
+            _rigidbody.drag = _characterDrag;
     }
 
     private void Jump() //arrumar o pulo continuo, colocar um delay
@@ -258,15 +268,17 @@ public class FPSCharacterController : MonoBehaviour
     {
         if (_leanInput != 0f)
         {
-            if (_leanInput > 0f)
+            if (_leanInput > 0f && _canLean >= 0)
             {
-                _leanTarget = _leanScale;
-                _leanAngleTarget = -_leanAngle;
+                _leanTarget = _leanDisplacement;
+                _leanAngleTarget = 360f -_leanAngle;
+                _canLean = 1;
             }
-            else
+            else if (_leanInput < 0f && _canLean <= 0)
             {
-                _leanTarget = -_leanScale;
+                _leanTarget = -_leanDisplacement;
                 _leanAngleTarget = _leanAngle;
+                _canLean = -1;
             }
         }
         else
@@ -275,21 +287,29 @@ public class FPSCharacterController : MonoBehaviour
             _leanAngleTarget = 0f;
         }
 
-        if (_cameraTransform.localPosition.x != _leanTarget)
+        if (_leanAngleTarget == 0f && Mathf.Round(_cameraTransform.localEulerAngles.z) == 0f)
+            _canLean = 0;
+
+        if (System.Math.Round(_cameraTransform.localPosition.x, 1) != _leanTarget)
         {
             float _cameraCurrentPosX = Mathf.Lerp(_cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
             _cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, _cameraTransform.localPosition.y, _cameraTransform.localPosition.z);
-            _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime;
+            _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
             _leanPositionLerpInterpolation = 0f;
 
-        if(_cameraTransform.localEulerAngles.z != _leanAngleTarget)
+        if(Mathf.Round(_cameraTransform.localEulerAngles.z) != _leanAngleTarget)
         {
+            if (_leanAngleTarget > 270f && Mathf.Round(_cameraTransform.localEulerAngles.z) == 0f)
+                _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, 359f);
+
+            if (_cameraTransform.localEulerAngles.z > 270f && _leanAngleTarget == 0f)
+                _leanAngleTarget = 360f;
+
             float _cameraCurrentAngle = Mathf.Lerp(_cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
             _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
-            _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime;
-            Debug.Log(_cameraTransform.localEulerAngles.z);
+            _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
             _leanAngleLerpInterpolation = 0f;
