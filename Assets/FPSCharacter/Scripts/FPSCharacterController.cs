@@ -52,6 +52,10 @@ public class FPSCharacterController : MonoBehaviour
     [SerializeField]
     private int _leanSmooth = 10;
 
+	[SerializeField] private GameObject _bullet;
+	[Range(1,500)]
+	[SerializeField] private float _bulletForce = 10f;
+
     private float _axisXInput;
     private float _axisYInput;
     private float _verticalInput;
@@ -77,13 +81,18 @@ public class FPSCharacterController : MonoBehaviour
     private float _leanPositionLerpInterpolation;
     private float _leanAngleLerpInterpolation;
 
+	private bool _hasShot;
+	private float _shotInput;
+
     private Transform _cameraTransform;
+	private Transform _playerTransform;
     private Rigidbody _rigidbody;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         _cameraTransform = transform.GetChild(0).transform;
+		_playerTransform = transform.GetChild(1).transform;
         _currentAngleY = transform.rotation.y;
         _currentAngleX = _cameraTransform.localRotation.x;
         _rigidbody = GetComponent<Rigidbody>();
@@ -91,6 +100,7 @@ public class FPSCharacterController : MonoBehaviour
         _isProne = false;
         _isStand = true;
         _isJump = false;
+		_hasShot = false;
         _standHeight = _cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
         _maxInputValue = 0.1f;
@@ -111,6 +121,7 @@ public class FPSCharacterController : MonoBehaviour
         DragController();
         PlayerMovement();
         Jump();
+		Shoot ();
     }
 
     private void GetInput()
@@ -122,6 +133,7 @@ public class FPSCharacterController : MonoBehaviour
         _verticalInput = Input.GetAxis("Vertical");
         _horizontalInput = Input.GetAxis("Horizontal");
         _leanInput = Input.GetAxisRaw("Lean");
+		_shotInput = Input.GetAxisRaw("Fire1");
     }
 
     private void PlayerLook()
@@ -199,6 +211,23 @@ public class FPSCharacterController : MonoBehaviour
         if (_jumpInput > 0f && _isStand && !_isJump)
             _rigidbody.AddForce(0f, _jumpVelocity, 0f, ForceMode.VelocityChange);
     }
+
+	private void Shoot()
+	{
+		if (_shotInput > 0f) {
+			Rigidbody rb;
+			GameObject shotBullet = Instantiate (_bullet);
+
+			shotBullet.transform = this.transform;
+
+			Vector3 force = shotBullet.transform.localPosition * _bulletForce;
+			rb = shotBullet.GetComponent<Rigidbody>();
+
+			rb.AddForce (force);
+
+			Destroy(shotBullet, 3.5f);
+		}
+	}
 
     private bool Grounded()
     {
