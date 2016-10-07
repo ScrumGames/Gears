@@ -7,19 +7,19 @@ public class FPSCharacterController : MonoBehaviour
 {
     [SerializeField]
     [Range(1, 50)]
-    private int _forwardSpeed = 4;
+    private int _forwardSpeed = 5;
     [SerializeField]
     [Range(1, 50)]
-    private int _backSpeed = 3;
+    private int _backSpeed = 4;
     [SerializeField]
     [Range(1, 50)]
-    private int _strafeSpeed = 4;
+    private int _strafeSpeed = 5;
     [SerializeField]
     [Range(0, 10)]
-    private float _crouchSpeed = 1;
+    private float _crouchSpeed = 2;
     [SerializeField]
     [Range(0, 10)]
-    private float _proneSpeed = 0.6f;
+    private float _proneSpeed = 1f;
     [SerializeField]
     [Range(1, 10)]
     private int _runSpeedMultiplier = 2;
@@ -33,9 +33,7 @@ public class FPSCharacterController : MonoBehaviour
     [Range(1, 30)]
     private int _jumpSpeed = 5;
     [SerializeField]
-    private LayerMask _groundLayerMask;
-    [SerializeField]
-    private float _distanceToGrounded = 1.08f;
+    private float _gravity = -9.81f;
     [SerializeField]
     private float _crounchHeight = 0.1f;
     [SerializeField]
@@ -45,7 +43,7 @@ public class FPSCharacterController : MonoBehaviour
     private int _CrouchProneSmooth = 5;
     [Range(0, 2)]
     [SerializeField]
-    private float _leanDisplacement = 0.4f;
+    private float _leanDisplacement = 0.5f;
     [Range(0, 90)]
     [SerializeField]
     private int _leanAngle = 10;
@@ -57,9 +55,7 @@ public class FPSCharacterController : MonoBehaviour
     private float _axisYInput;
     private float _verticalInput;
     private float _horizontalInput;
-    private float _maxInputValue;
     private float _runInput;
-    private float _jumpInput;
     private float _leanInput;
     private float _standHeight;
     private float _angleX;
@@ -71,14 +67,14 @@ public class FPSCharacterController : MonoBehaviour
     private bool _isCrouch;
     private bool _isProne;
     private bool _isStand;
-    private bool _isJump;
+    private int _movementBeforeJump;
     private float _crouchProneTarget;
     private float _leanTarget;
     private float _leanAngleTarget;
     private float _leanPositionLerpInterpolation;
     private float _leanAngleLerpInterpolation;
     private int _canLean;
-    private Vector3 _gravity;
+    private float _jumpMovement;
 
     private Transform _cameraTransform;
     private CharacterController _characterController;
@@ -93,12 +89,9 @@ public class FPSCharacterController : MonoBehaviour
         _isCrouch = false;
         _isProne = false;
         _isStand = true;
-        _isJump = false;
         _standHeight = _cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
-        _maxInputValue = 0.1f;
         _canLean = 0;
-        _gravity = Vector3.zero;
     }
 
     void Update()
@@ -116,7 +109,6 @@ public class FPSCharacterController : MonoBehaviour
     {
         _axisXInput = Input.GetAxisRaw("Mouse X");
         _axisYInput = Input.GetAxisRaw("Mouse Y");
-        _jumpInput = Input.GetAxisRaw("Jump");
         _runInput = Input.GetAxisRaw("Run");
         _verticalInput = Input.GetAxis("Vertical");
         _horizontalInput = Input.GetAxis("Horizontal");
@@ -144,11 +136,10 @@ public class FPSCharacterController : MonoBehaviour
 
     private void PlayerMovement()
     {
-        //Gravity
-        if (!_characterController.isGrounded)
-            _gravity += Physics.gravity * Time.deltaTime;
+        if (_jumpMovement > _gravity || !_characterController.isGrounded)
+            _jumpMovement += _gravity * Time.deltaTime;
         else
-            _gravity = Vector3.zero;
+            _jumpMovement = _gravity;
 
         //Movement speed
         if (_isStand)
@@ -169,9 +160,23 @@ public class FPSCharacterController : MonoBehaviour
             }
 
             //Jump
-            if (Input.GetButtonDown("Jump") && Grounded())
-                _gravity.y = _jumpSpeed;
+            if (Input.GetButtonDown("Jump") && _characterController.isGrounded)
+            {
+                //Check if Character is moving and get the direction
+                //During the jump, the character just can move to direction that was moving
+                if (_verticalInput > 0f)
+                    _movementBeforeJump = 1;
+                else if (_horizontalInput > 0f)
+                    _movementBeforeJump = 2;
+                else if (_horizontalInput < 0f)
+                    _movementBeforeJump = 3;
+                else if (_verticalInput < 0f)
+                    _movementBeforeJump = 4;
+                else
+                    _movementBeforeJump = 5;
 
+                _jumpMovement = _jumpSpeed;
+            }
         }
         //Crouch movement spped
         else if (_isCrouch)
@@ -186,18 +191,45 @@ public class FPSCharacterController : MonoBehaviour
             _rightLeftMovement = _horizontalInput * _proneSpeed;
         }
 
+        //During the jump, the character just can move to direction that was moving
+        if (!_characterController.isGrounded)
+        {
+            switch (_movementBeforeJump)
+            {
+                case 1:
+                    _rightLeftMovement = 0f;
+                    if (_forwardBackMovement < 0f)
+                        _forwardBackMovement = 0f;
+                    break;
+                case 2:
+                    _forwardBackMovement = 0f;
+                    if (_rightLeftMovement < 0f)
+                        _rightLeftMovement = 0f;
+                    break;
+                case 3:
+                    _forwardBackMovement = 0f;
+                    if (_rightLeftMovement > 0f)
+                        _rightLeftMovement = 0f;
+                    break;
+                case 4:
+                    _rightLeftMovement = 0f;
+                    if (_forwardBackMovement > 0f)
+                        _forwardBackMovement = 0f;
+                    break;
+                case 5:
+                    _forwardBackMovement = 0f;
+                    _rightLeftMovement = 0f;
+                    break;
+            }
+        }
+
         //Moving character relative direction
-        Vector3 moveDirection = new Vector3(_rightLeftMovement, _gravity.y, _forwardBackMovement);
+        Vector3 moveDirection = new Vector3(_rightLeftMovement, _jumpMovement, _forwardBackMovement);
         moveDirection = transform.TransformDirection(moveDirection);
 
         //moving
         _characterController.Move(moveDirection * Time.deltaTime);
         
-    }
-
-    private bool Grounded()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, _distanceToGrounded, _groundLayerMask);
     }
 
     private void Crouch()
