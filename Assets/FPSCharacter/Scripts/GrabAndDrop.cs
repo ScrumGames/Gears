@@ -12,42 +12,50 @@ public class GrabAndDrop : MonoBehaviour {
     private UnityEngine.UI.Text _msgText;
     private RaycastHit _hit;
     private Inventory _inventory;
-    private Camera _camera;
+    private Transform _cameraTransform;
 
 
 	void Start ()
     {
         _msgText.text = "";
         _inventory = GetComponent<Inventory>();
-        _camera = transform.GetChild(0).GetComponent<Camera>();
+        _cameraTransform = transform.GetChild(0).transform;
 	}
 	
 	void Update ()
     {
-        if (SeekObject())
+        SeekObject();
+        DropObject(); 
+    }
+
+    private void SeekObject()
+    {
+        if (Physics.SphereCast(_cameraTransform.position, 1.0f, _cameraTransform.forward, out _hit, 2.0f, _objectLayerMask))
         {
-            if (!_inventory.isFull())
+            if (_hit.transform.GetComponent<CatchableObject>().GetCatchableObjectType().Equals("SimpleObject"))
             {
-                _msgText.text = "Press G to grab";
+                if (!_inventory.isFull())
+                {
+                    _msgText.text = "Press G to grab";
+                    if (Input.GetButtonDown("Grab"))
+                    {
+                        GrabObject();
+                    }
+                }
+                else
+                    _msgText.text = "Inventory is full!";
+            }
+            else if (_hit.transform.GetComponent<CatchableObject>().GetCatchableObjectType().Equals("Ammo"))
+            {
+                _msgText.text = "Press G to get ammo";
                 if (Input.GetButtonDown("Grab"))
                 {
-                    GrabObject();
+                    GrabAmmo();
                 }
             }
-            else
-                _msgText.text = "Inventory is full!";
         }
         else
             _msgText.text = "";
-
-        if (Input.GetButtonDown("Drop") && !_inventory.isEmpty())
-            DropObject();
-        
-    }
-
-    private bool SeekObject()
-    {
-        return Physics.SphereCast(_camera.transform.position, 1.0f, _camera.transform.forward, out _hit, 2.0f, _objectLayerMask);
     }
 
     private void GrabObject()
@@ -56,13 +64,21 @@ public class GrabAndDrop : MonoBehaviour {
         _inventory.AddObjectInventory(_hit.transform.gameObject);
     }
 
-    private void DropObject()
+    private void GrabAmmo()
     {
-        GameObject obj = _inventory.RemoveObjectInventory();
-        obj.SetActive(true);
-        obj.transform.position = transform.GetChild(0).GetChild(0).transform.position;
-        Rigidbody rg = obj.GetComponent<Rigidbody>();
-        rg.velocity = transform.TransformDirection(new Vector3(0, 2, 3));
+        transform.GetComponent<WeaponController>().addAmmo();
+        Destroy(_hit.transform.gameObject);
     }
 
+    private void DropObject()
+    {
+        if (Input.GetButtonDown("Drop") && !_inventory.isEmpty())
+        {
+            GameObject obj = _inventory.RemoveObjectInventory();
+            obj.SetActive(true);
+            obj.transform.position = transform.GetChild(0).GetChild(0).transform.position;
+            Rigidbody rg = obj.GetComponent<Rigidbody>();
+            rg.velocity = transform.TransformDirection(new Vector3(0, 2, 3));
+        }
+    }
 }
