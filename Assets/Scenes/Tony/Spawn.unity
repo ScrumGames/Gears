@@ -271,6 +271,7 @@ Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   m_GameObject: {fileID: 360753095}
   m_LocalRotation: {x: 0.39160618, y: -0, z: -0, w: 0.92013294}
@@ -284,6 +285,11 @@ Transform:
 =======
   m_LocalPosition: {x: 0, y: 13.9, z: -16.2}
 >>>>>>> Iniciando sistema de armas.
+=======
+  m_GameObject: {fileID: 415639312}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 27}
+>>>>>>> Subindo melhorias estruturais
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -941,9 +947,12 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ca039d62629984701ae3edb216229733, type: 2}
   m_IsPrefabParent: 0
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 8d221fcac47dc884ccf61a766c06169d4428d614
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
 =======
+=======
+>>>>>>> Subindo melhorias estruturais
 --- !u!1 &1365697924 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1000012877189392, guid: fa3b14472d340864cb4935769fda357a,
@@ -1059,8 +1068,11 @@ MonoBehaviour:
     m_Bits: 0
   _shotgunBullet: {fileID: 1000014231145902, guid: 9f180659502b94a2cac16021149bbbfd,
     type: 2}
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 =======
 >>>>>>> Iniciando sistema de armas.
+=======
+>>>>>>> Subindo melhorias estruturais
 --- !u!1001 &1477113294
 Prefab:
   m_ObjectHideFlags: 0
@@ -1070,11 +1082,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4000013598244896, guid: a2819672a09fd472281454e68bc12b58, type: 2}
       propertyPath: m_LocalPosition.x
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 8d221fcac47dc884ccf61a766c06169d4428d614
       value: -6.71
 =======
       value: 0
 >>>>>>> Iniciando sistema de armas.
+=======
+      value: -6.71
+>>>>>>> Subindo melhorias estruturais
       objectReference: {fileID: 0}
     - target: {fileID: 4000013598244896, guid: a2819672a09fd472281454e68bc12b58, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1102,7 +1118,10 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4000013598244896, guid: a2819672a09fd472281454e68bc12b58, type: 2}
       propertyPath: m_RootOrder
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 8d221fcac47dc884ccf61a766c06169d4428d614
+=======
+>>>>>>> Subindo melhorias estruturais
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1000011221745618, guid: a2819672a09fd472281454e68bc12b58, type: 2}
@@ -1112,14 +1131,20 @@ Prefab:
     - target: {fileID: 1000010161791098, guid: a2819672a09fd472281454e68bc12b58, type: 2}
       propertyPath: m_IsActive
       value: 1
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 =======
       value: 4
 >>>>>>> Iniciando sistema de armas.
+=======
+>>>>>>> Subindo melhorias estruturais
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a2819672a09fd472281454e68bc12b58, type: 2}
   m_IsPrefabParent: 0
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 8d221fcac47dc884ccf61a766c06169d4428d614
+=======
+>>>>>>> Subindo melhorias estruturais
 --- !u!1 &1632715079 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1000010161791098, guid: a2819672a09fd472281454e68bc12b58,
@@ -1244,9 +1269,12 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 >>>>>>> Subindo melhorias estruturais
 =======
 >>>>>>> Iniciando sistema de armas.
+=======
+>>>>>>> Subindo melhorias estruturais
 --- !u!4 &1688237253 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4000013460705792, guid: 6c85d9249f7484da485a09bf1b1277cf,

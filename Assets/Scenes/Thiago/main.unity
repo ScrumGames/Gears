@@ -266,7 +266,11 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 19478404}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
 --- !u!1 &24384435
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,7 +545,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fa3b14472d340864cb4935769fda357a, type: 2}
   m_IsPrefabParent: 0
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
 --- !u!4 &133041230 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4000011605848106, guid: fa3b14472d340864cb4935769fda357a,
@@ -7380,7 +7388,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   m_Father: {fileID: 1204608608}
   m_RootOrder: 0
 --- !u!1 &1788036706
@@ -7463,7 +7475,11 @@ GameObject:
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 4
   m_Component:
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   - 4: {fileID: 1872796785}
   - 33: {fileID: 1872796784}
   - 65: {fileID: 1872796783}
@@ -7481,7 +7497,11 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
 --- !u!23 &1872796782
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7770,7 +7790,11 @@ Transform:
   m_LocalPosition: {x: -0.051949505, y: -0.009096599, z: 0.0055644014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   m_Children:
   - {fileID: 227862493}
   m_Father: {fileID: 156435801}
@@ -7988,7 +8012,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   - {fileID: 180912047}
   m_Father: {fileID: 498432269}
   m_RootOrder: 1
@@ -8176,7 +8204,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100172, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1986107212}
@@ -8523,7 +8555,11 @@ Transform:
   m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_Children: []
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
   m_Father: {fileID: 0}
   m_RootOrder: 11
 --- !u!54 &2129596273

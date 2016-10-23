@@ -142,7 +142,11 @@ public class FPSCharacterController : MonoBehaviour
         cameraTransform.localEulerAngles = temp;
     }
 
+<<<<<<< 3bffa5a0b9cbd60d0a8ebc01b4fd4f8fbced9e52
 <<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
+=======
+<<<<<<< 2ceaf763ac5a26bbc50d68f87385feb0b29b106e
+>>>>>>> Subindo melhorias estruturais
     private void PlayerMovement()
     {
         if (!_characterController.isGrounded)

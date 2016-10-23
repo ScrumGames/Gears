@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Data.Enemy
+public enum EnemyType
 {
-	public enum EnemyType
-	{
-		Dumb,
-		Normal,
-		Boss,
-		BigBoss
-	}
+	Dumb,
+	Normal,
+	Boss,
+	BigBoss
 }
