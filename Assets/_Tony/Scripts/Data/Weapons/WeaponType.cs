@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum WeaponType
+namespace Data.Weapons
 {
-	Fuzil,
-	RPG,
-	Shotgun,
-	Pistol,
-	IronBar,
-	Axe,
-	Bomb,
-	Knife
+	public enum WeaponType
+	{
+		Fuzil,
+		RPG,
+		Shotgun,
+		Pistol,
+		IronBar,
+		Axe,
+		Bomb,
+		Knife
+	}
 }

@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum WeaponAtackType
+namespace Data.Weapons
 {
-	Meele,
-	Range,
-	Throwables
+	public enum WeaponAtackType
+	{
+		Meele,
+		Range,
+		Throwables
+	}
 }
