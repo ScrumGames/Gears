@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37356448, g: 0.3811204, b: 0.35887685, a: 1}
+  m_IndirectSpecularColor: {r: 0.37356424, g: 0.3811201, b: 0.35887662, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -266,6 +266,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 19478404}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
 --- !u!1 &24384435
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,25 +351,13 @@ GameObject:
   m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &33686800
+=======
+--- !u!4 &33686800 stripped
+>>>>>>> Subindo melhorias estruturais
 Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 33686799}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children:
-  - {fileID: 1606081978}
-  - {fileID: 979864028}
-  - {fileID: 1462519441}
-  - {fileID: 999621580}
-  - {fileID: 1940050774}
-  - {fileID: 234625886}
-  - {fileID: 1664444764}
-  m_Father: {fileID: 1611832686}
-  m_RootOrder: 1
+  m_PrefabParentObject: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e,
+    type: 2}
+  m_PrefabInternal: {fileID: 2099673405}
 --- !u!1 &58229492
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,6 +541,7 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fa3b14472d340864cb4935769fda357a, type: 2}
   m_IsPrefabParent: 0
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
 --- !u!4 &133041230 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4000011605848106, guid: fa3b14472d340864cb4935769fda357a,
@@ -647,6 +637,9 @@ Transform:
   m_Father: {fileID: 1605956910}
   m_RootOrder: 14
 --- !u!1 &168236970
+=======
+--- !u!1 &431584746
+>>>>>>> Subindo melhorias estruturais
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100144, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
@@ -7387,6 +7380,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   m_Father: {fileID: 1204608608}
   m_RootOrder: 0
 --- !u!1 &1788036706
@@ -7458,23 +7452,36 @@ MeshFilter:
   m_GameObject: {fileID: 1788036706}
   m_Mesh: {fileID: 4300060, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
 --- !u!1 &1872796781
+=======
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+--- !u!1 &1135333271
+>>>>>>> Subindo melhorias estruturais
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 4
   m_Component:
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   - 4: {fileID: 1872796785}
   - 33: {fileID: 1872796784}
   - 65: {fileID: 1872796783}
   - 23: {fileID: 1872796782}
   m_Layer: 9
   m_Name: Ground
+=======
+  - 4: {fileID: 1135333273}
+  - 108: {fileID: 1135333272}
+  m_Layer: 0
+  m_Name: Point light
+>>>>>>> Subindo melhorias estruturais
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
 --- !u!23 &1872796782
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7524,6 +7531,43 @@ MeshFilter:
   m_GameObject: {fileID: 1872796781}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &1872796785
+=======
+--- !u!108 &1135333272
+Light:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1135333271}
+  m_Enabled: 1
+  serializedVersion: 7
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 9
+  m_SpotAngle: 30
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_Lightmapping: 4
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+--- !u!4 &1135333273
+>>>>>>> Subindo melhorias estruturais
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -7726,6 +7770,7 @@ Transform:
   m_LocalPosition: {x: -0.051949505, y: -0.009096599, z: 0.0055644014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   m_Children:
   - {fileID: 227862493}
   m_Father: {fileID: 156435801}
@@ -7810,6 +7855,46 @@ MeshFilter:
   m_GameObject: {fileID: 1940050773}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1945092527
+=======
+  m_Children: []
+  m_Father: {fileID: 1520344620}
+  m_RootOrder: 4
+--- !u!108 &1453695928
+Light:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1453695926}
+  m_Enabled: 1
+  serializedVersion: 7
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 9
+  m_SpotAngle: 30
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_Lightmapping: 4
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+--- !u!1 &1489531540
+>>>>>>> Subindo melhorias estruturais
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100108, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
@@ -7903,6 +7988,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   - {fileID: 180912047}
   m_Father: {fileID: 498432269}
   m_RootOrder: 1
@@ -7975,6 +8061,16 @@ MeshFilter:
   m_GameObject: {fileID: 1957787424}
   m_Mesh: {fileID: 4300000, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
 --- !u!1 &1967960071
+=======
+  - {fileID: 1135333273}
+  - {fileID: 58229493}
+  - {fileID: 431584747}
+  - {fileID: 522591261}
+  - {fileID: 1453695927}
+  m_Father: {fileID: 1611832686}
+  m_RootOrder: 0
+--- !u!1 &1611832685
+>>>>>>> Subindo melhorias estruturais
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100158, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
@@ -8080,6 +8176,7 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100172, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1986107212}
@@ -8258,6 +8355,11 @@ Transform:
   m_Father: {fileID: 1605956910}
   m_RootOrder: 46
 --- !u!1 &2087774243
+=======
+  m_GameObject: {fileID: 1638462277}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1686204962
+>>>>>>> Subindo melhorias estruturais
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100178, guid: 51c9d3048032435479552f60b7e853b7, type: 3}
@@ -8421,6 +8523,7 @@ Transform:
   m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_Children: []
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
   m_Father: {fileID: 0}
   m_RootOrder: 11
 --- !u!54 &2129596273
@@ -8546,3 +8649,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 156435801}
   m_RootOrder: 3
+=======
+  m_Father: {fileID: 1611832686}
+  m_RootOrder: 2
+--- !u!1001 &2099673405
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1611832686}
+    m_Modifications:
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013916018876, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 6f68aa56b4d0d4eba8a8d5e2c358ef6e, type: 2}
+  m_IsPrefabParent: 0
+>>>>>>> Subindo melhorias estruturais

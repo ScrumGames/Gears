@@ -51,6 +51,8 @@ public class FPSCharacterController : MonoBehaviour
     [SerializeField]
     private int _leanSmooth = 15;
 
+	[SerializeField] private float _speed;
+
     private float _axisXInput;
     private float _axisYInput;
     private float _verticalInput;
@@ -75,6 +77,7 @@ public class FPSCharacterController : MonoBehaviour
     private float _leanAngleLerpInterpolation;
     private int _canLean;
     private float _jumpMovement;
+	private NavMeshAgent _navMeshAgent;
 
     private Transform cameraTransform;
     private CharacterController _characterController;
@@ -93,6 +96,11 @@ public class FPSCharacterController : MonoBehaviour
         _crouchProneTarget = _standHeight;
         _canLean = 0;
     }
+
+	void Awake()
+	{
+		_navMeshAgent = GetComponent<NavMeshAgent> ();
+	}
 
     void Update()
     {
@@ -134,6 +142,7 @@ public class FPSCharacterController : MonoBehaviour
         cameraTransform.localEulerAngles = temp;
     }
 
+<<<<<<< 6d8a427eed2436a14edf59376a30dc2cca14aeda
     private void PlayerMovement()
     {
         if (!_characterController.isGrounded)
@@ -231,6 +240,115 @@ public class FPSCharacterController : MonoBehaviour
         _characterController.Move(moveDirection * Time.deltaTime);
         
     }
+=======
+//    private void PlayerMovement()
+//    {
+//        if (_jumpMovement > _gravity || !_characterController.isGrounded)
+//            _jumpMovement += _gravity * Time.deltaTime;
+//        else
+//            _jumpMovement = _gravity;
+//
+//        //Movement speed
+//        if (_isStand)
+//        {
+//            //Forward and back
+//            if (_verticalInput > 0f)
+//                _forwardBackMovement = _verticalInput * _forwardSpeed;
+//            else
+//                _forwardBackMovement = _verticalInput * _backSpeed;
+//
+//            _rightLeftMovement = _horizontalInput * _strafeSpeed;
+//
+//            //Run
+//            if (_runInput > 0f && _verticalInput > 0f)
+//            {
+//                _forwardBackMovement = _forwardBackMovement * _runSpeedMultiplier;
+//                _rightLeftMovement = _rightLeftMovement * _runSpeedMultiplier;
+//            }
+//
+//            //Jump
+//            if (Input.GetButtonDown("Jump") && _characterController.isGrounded)
+//            {
+//                //Check if Character is moving and get the direction
+//                //During the jump, the character just can move to direction that was moving
+//                if (_verticalInput > 0f)
+//                    _movementBeforeJump = 1;
+//                else if (_horizontalInput > 0f)
+//                    _movementBeforeJump = 2;
+//                else if (_horizontalInput < 0f)
+//                    _movementBeforeJump = 3;
+//                else if (_verticalInput < 0f)
+//                    _movementBeforeJump = 4;
+//                else
+//                    _movementBeforeJump = 5;
+//
+//                _jumpMovement = _jumpSpeed;
+//            }
+//        }
+//        //Crouch movement spped
+//        else if (_isCrouch)
+//        {
+//            _forwardBackMovement = _verticalInput * _crouchSpeed;
+//            _rightLeftMovement = _horizontalInput * _crouchSpeed;
+//        }
+//        //Prone movement speed
+//        else
+//        {
+//            _forwardBackMovement = _verticalInput * _proneSpeed;
+//            _rightLeftMovement = _horizontalInput * _proneSpeed;
+//        }
+//
+//        //During the jump, the character just can move to direction that was moving
+//        if (!_characterController.isGrounded)
+//        {
+//            switch (_movementBeforeJump)
+//            {
+//                case 1:
+//                    _rightLeftMovement = 0f;
+//                    if (_forwardBackMovement < 0f)
+//                        _forwardBackMovement = 0f;
+//                    break;
+//                case 2:
+//                    _forwardBackMovement = 0f;
+//                    if (_rightLeftMovement < 0f)
+//                        _rightLeftMovement = 0f;
+//                    break;
+//                case 3:
+//                    _forwardBackMovement = 0f;
+//                    if (_rightLeftMovement > 0f)
+//                        _rightLeftMovement = 0f;
+//                    break;
+//                case 4:
+//                    _rightLeftMovement = 0f;
+//                    if (_forwardBackMovement > 0f)
+//                        _forwardBackMovement = 0f;
+//                    break;
+//                case 5:
+//                    _forwardBackMovement = 0f;
+//                    _rightLeftMovement = 0f;
+//                    break;
+//            }
+//        }
+//
+//        //Moving character relative direction
+//        Vector3 moveDirection = new Vector3(_rightLeftMovement, _jumpMovement, _forwardBackMovement);
+//        moveDirection = transform.TransformDirection(moveDirection);
+//
+//        //moving
+//        _characterController.Move(moveDirection * Time.deltaTime);
+//        
+//    }
+
+	private void PlayerMovement()
+	{
+		_verticalInput = Input.GetAxis ("Vertical");
+		_horizontalInput = Input.GetAxis ("Horizontal");
+
+		Vector3 movement = new Vector3 (_horizontalInput, 0, _verticalInput);
+		movement = movement.normalized * _speed * Time.deltaTime;
+		_navMeshAgent.Move (movement);
+	}
+>>>>>>> Subindo melhorias estruturais
 
     private void Crouch()
     {
