@@ -1,16 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using Utils.Data;
 
-public class EnemyDataConfig : ScriptableObject
+namespace Data.Enemy
 {
-	[SerializeField] private EnemyEspecification[] _enemyConfig;
-
-	public EnemyEspecification[] EnemyConfig { get { return _enemyConfig; } }
-
-	[MenuItem("Assets/Create/Create Enemy Configuration")]
-	public static void CreateAsset()
+	public class EnemyDataConfig : ScriptableObject
 	{
-		ScriptableObjectUtility.CreateAsset<EnemyDataConfig> ();
+		[SerializeField] private EnemyEspecification[] _enemyConfig;
+
+		public EnemyEspecification[] EnemyConfig { get { return _enemyConfig; } }
+
+		[MenuItem("Assets/Create/Create Enemy Configuration")]
+		public static void CreateAsset()
+		{
+			ScriptableObjectUtility.CreateAsset<EnemyDataConfig> ();
+		}
 	}
 }
+
+

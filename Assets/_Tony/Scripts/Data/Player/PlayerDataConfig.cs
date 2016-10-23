@@ -1,17 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using Utils.Data;
 
-public class PlayerDataConfig : ScriptableObject
+namespace Data.Player
 {
-	[SerializeField] private PlayerLevelSpecification[] _playerProgression;
-
-	public PlayerLevelSpecification[] PlayerProgression { get { return _playerProgression; } }
-
-
-	[MenuItem("Assets/Create/Create Player Configuration")]
-	public static void CreateAsset()
+	public class PlayerDataConfig : ScriptableObject
 	{
-		ScriptableObjectUtility.CreateAsset<PlayerDataConfig> ();
+		[SerializeField] private PlayerLevelSpecification[] _playerProgression;
+
+		public PlayerLevelSpecification[] PlayerProgression { get { return _playerProgression; } }
+
+
+		[MenuItem("Assets/Create/Create Player Configuration")]
+		public static void CreateAsset()
+		{
+			ScriptableObjectUtility.CreateAsset<PlayerDataConfig> ();
+		}
 	}
+
 }

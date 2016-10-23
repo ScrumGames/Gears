@@ -1,22 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using Utils.Data;
 
-public class WeaponDataConfig : ScriptableObject 
+namespace Data.Weapons
 {
-	[SerializeField] private WeaponSpecification[] _weaponConfig;
-
-	public WeaponSpecification[] WeaponConfig
+	public class WeaponDataConfig : ScriptableObject 
 	{
-		get
+		[SerializeField] private WeaponSpecification[] _weaponConfig;
+
+		public WeaponSpecification[] WeaponConfig
 		{
-			return _weaponConfig;
+			get
+			{
+				return _weaponConfig;
+			}
+		}
+
+		[MenuItem("Assets/Create/Create Weapon Configuration")]
+		public static void CreateAsset()
+		{
+			ScriptableObjectUtility.CreateAsset<WeaponDataConfig> ();
 		}
 	}
-		
-	[MenuItem("Assets/Create/Create Weapon Configuration")]
-	public static void CreateAsset()
-	{
-		ScriptableObjectUtility.CreateAsset<WeaponDataConfig> ();
-	}
 }
+
+

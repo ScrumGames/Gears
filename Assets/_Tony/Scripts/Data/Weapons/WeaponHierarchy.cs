@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum WeaponHierarchy
+namespace Data.Weapons
 {
-	Primary,
-	Secundary,
-	Third,
-	Forth
+	public enum WeaponHierarchy
+	{
+		Primary,
+		Secundary,
+		Third,
+		Forth
+	}
 }
+
+
 

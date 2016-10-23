@@ -2,12 +2,15 @@
 using System.Collections;
 using System;
 
-[Serializable]
-public class PlayerLevelSpecification
+namespace Data.Player
 {
-	public int level;
-	public int minXP;
-	public int maxXP;
-	public int health;
-	public int maxAmmo;
+	[Serializable]
+	public class PlayerLevelSpecification
+	{
+		public int level;
+		public int minXP;
+		public int maxXP;
+		public int health;
+		public int maxAmmo;
+	}
 }
