@@ -24,9 +24,9 @@ public class ZoomWeapon : MonoBehaviour {
     private Camera _camera;
     private float _originalCameraFOV;
     private int _originalLookSensivity;
-    private int _originalForwardSpeed;
-    private int _originalBackSpeed;
-    private int _originalStrafeSpeed;
+    private float _originalForwardSpeed;
+    private float _originalBackSpeed;
+    private float _originalStrafeSpeed;
 
     void Start()
     {
@@ -37,10 +37,10 @@ public class ZoomWeapon : MonoBehaviour {
         _shotgunZoomAngle = new Vector3(0, -90, 0);
         _camera = transform.GetChild(0).GetComponent<Camera>();
         _originalCameraFOV = _camera.fieldOfView;
-        _originalLookSensivity = transform.GetComponent<FPSCharacterController>().LookSensitivity;
-        _originalForwardSpeed = transform.GetComponent<FPSCharacterController>().ForwardSpeed;
-        _originalBackSpeed = transform.GetComponent<FPSCharacterController>().BackSpeed;
-        _originalStrafeSpeed = transform.GetComponent<FPSCharacterController>().StrafeSpeed;
+        _originalLookSensivity = transform.GetComponent<FPSRigidbodyCharacterController>().LookSensitivity;
+        _originalForwardSpeed = transform.GetComponent<FPSRigidbodyCharacterController>().ForwardSpeed;
+        _originalBackSpeed = transform.GetComponent<FPSRigidbodyCharacterController>().BackSpeed;
+        _originalStrafeSpeed = transform.GetComponent<FPSRigidbodyCharacterController>().StrafeSpeed;
     }
 
     void Update()
@@ -54,19 +54,19 @@ public class ZoomWeapon : MonoBehaviour {
         {
             _shotgun.transform.localPosition = Vector3.Lerp(_shotgun.transform.localPosition, _shotgunZoomPosition, _zoomSmooth * Time.deltaTime);
             _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, _zoomCameraFOV, _zoomSmooth * Time.deltaTime);
-            transform.GetComponent<FPSCharacterController>().LookSensitivity = _zoomLookSensivity;
-            transform.GetComponent<FPSCharacterController>().ForwardSpeed = _zoomForwardSpeed;
-            transform.GetComponent<FPSCharacterController>().BackSpeed = _zoomBackSpeed;
-            transform.GetComponent<FPSCharacterController>().StrafeSpeed = _zoomStrafeSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().LookSensitivity = _zoomLookSensivity;
+            transform.GetComponent<FPSRigidbodyCharacterController>().ForwardSpeed = _zoomForwardSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().BackSpeed = _zoomBackSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().StrafeSpeed = _zoomStrafeSpeed;
         }
         else
         {
             _shotgun.transform.localPosition = Vector3.Lerp(_shotgun.transform.localPosition, _shotgunOriginalPosition, _zoomSmooth * Time.deltaTime);
             _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, _originalCameraFOV, _zoomSmooth * Time.deltaTime);
-            transform.GetComponent<FPSCharacterController>().LookSensitivity = _originalLookSensivity;
-            transform.GetComponent<FPSCharacterController>().ForwardSpeed = _originalForwardSpeed;
-            transform.GetComponent<FPSCharacterController>().BackSpeed = _originalBackSpeed;
-            transform.GetComponent<FPSCharacterController>().StrafeSpeed = _originalStrafeSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().LookSensitivity = _originalLookSensivity;
+            transform.GetComponent<FPSRigidbodyCharacterController>().ForwardSpeed = _originalForwardSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().BackSpeed = _originalBackSpeed;
+            transform.GetComponent<FPSRigidbodyCharacterController>().StrafeSpeed = _originalStrafeSpeed;
         }
     }
 

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Inventory))]
 
 public class GrabAndDrop : MonoBehaviour {
@@ -19,7 +18,7 @@ public class GrabAndDrop : MonoBehaviour {
     {
         _msgText.text = "";
         _inventory = GetComponent<Inventory>();
-        _cameraTransform = transform.GetChild(0).transform;
+        _cameraTransform = Camera.main.transform;
 	}
 	
 	void Update ()

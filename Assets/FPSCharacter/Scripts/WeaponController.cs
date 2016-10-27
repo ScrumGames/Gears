@@ -31,6 +31,8 @@ public class WeaponController : MonoBehaviour {
     private int _pistolBulletQuantity = 12;
     [SerializeField]
     private UnityEngine.UI.Text _ammoText;
+    [SerializeField]
+    private Transform _bulletPos;
 
     private bool _canShoot;
     private Transform _cameraTransform;
@@ -39,7 +41,7 @@ public class WeaponController : MonoBehaviour {
 
     void Start () {
         _canShoot = true;
-        _cameraTransform = transform.GetChild(0).transform;
+        _cameraTransform = Camera.main.transform;
         _audioSource = GetComponent<AudioSource>();
     }
 	
@@ -80,9 +82,9 @@ public class WeaponController : MonoBehaviour {
         {
             _canShoot = false;
             _rifleBulletQuantity--;
-            _bulletOriginal.transform.position = _cameraTransform.position;
             GameObject _bulletClone = Instantiate(_bulletOriginal);
             _bulletClone.SetActive(true);
+            _bulletClone.transform.position = _bulletPos.position;
             _bulletClone.GetComponent<Rigidbody>().AddForce(_cameraTransform.forward * _bulletVelocity, ForceMode.Impulse);
             _audioSource.clip = _rifleAudio;
             _audioSource.Play();
@@ -96,9 +98,9 @@ public class WeaponController : MonoBehaviour {
         {
             _canShoot = false;
             _shotgunBulletQuantity--;
-            _bulletOriginal.transform.position = _cameraTransform.position;
             GameObject _bulletClone = Instantiate(_bulletOriginal);
             _bulletClone.SetActive(true);
+            _bulletClone.transform.position = _bulletPos.position;
             _bulletClone.GetComponent<Rigidbody>().AddForce(_cameraTransform.forward * _bulletVelocity, ForceMode.Impulse);
             _audioSource.clip = _shotgunAudio;
             _audioSource.Play();
@@ -112,9 +114,9 @@ public class WeaponController : MonoBehaviour {
         {
             _canShoot = false;
             _pistolBulletQuantity--;
-            _bulletOriginal.transform.position = _cameraTransform.position;
             GameObject _bulletClone = Instantiate(_bulletOriginal);
             _bulletClone.SetActive(true);
+            _bulletClone.transform.position = _bulletPos.position;
             _bulletClone.GetComponent<Rigidbody>().AddForce(_cameraTransform.forward * _bulletVelocity, ForceMode.Impulse);
             _audioSource.clip = _pistolAudio;
             _audioSource.Play();

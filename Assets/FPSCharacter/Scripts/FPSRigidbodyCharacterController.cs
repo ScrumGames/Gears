@@ -2,19 +2,18 @@
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CapsuleCollider))]
 
 public class FPSRigidbodyCharacterController : MonoBehaviour
 {
     [SerializeField]
     [Range (1, 50)]
-    private int _forwardSpeed = 7;
+    private float _forwardSpeed = 6;
     [SerializeField]
     [Range(1, 50)]
-    private int _backSpeed = 6;
+    private float _backSpeed = 5;
     [SerializeField]
     [Range(1, 50)]
-    private int _strafeSpeed = 7;
+    private float _strafeSpeed = 5;
     [SerializeField]
     [Range(0, 10)]
     private float _crouchSpeed = 3;
@@ -23,19 +22,16 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     private float _proneSpeed = 2;
     [SerializeField]
     [Range(1, 10)]
-    private int _runSpeedMultiplier = 2;
-    [SerializeField]
-    [Range(1, 20)]
-    private int _characterDrag = 7;
+    private float _runSpeedMultiplier = 2;
     [SerializeField]
     [Range(50, 500)]
-    private int _lookSensitivity = 180;
+    private int _lookSensitivity = 150;
     [SerializeField]
     [Range(1, 30)]
     private int _lookSmooth = 4;
     [SerializeField]
     [Range(1, 30)]
-    private int _jumpVelocity = 5;
+    private int _jumpVelocity = 3;
     [SerializeField]
     private LayerMask _groundLayerMask;
     [SerializeField]
@@ -61,7 +57,6 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     private float _axisYInput;
     private float _verticalInput;
     private float _horizontalInput;
-    private float _maxInputValue;
     private float _runInput;
     private float _jumpInput;
     private float _leanInput;
@@ -99,7 +94,6 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         _isJump = false;
         _standHeight = _cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
-        _maxInputValue = 0.1f;
         _canLean = 0;
     }
 
@@ -107,6 +101,7 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     {
         GetInput();
         PlayerLook();
+        PlayerMovement();
         Crouch();
         Prone();
         CrouchProneSmooth();
@@ -115,8 +110,6 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
 
     void FixedUpdate()
     {
-        DragController();
-        PlayerMovement();
         Jump();
     }
 
@@ -136,7 +129,7 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         _angleY += _axisXInput * _lookSensitivity * Time.deltaTime;
         _angleX -= _axisYInput * _lookSensitivity * Time.deltaTime;
 
-        _angleX = Mathf.Clamp(_angleX, -90.0f, 90.0f);
+        _angleX = Mathf.Clamp(_angleX, -80.0f, 80.0f);
 
         _currentAngleY = Mathf.Lerp(_currentAngleY, _angleY, 1f / _lookSmooth);
         _currentAngleX = Mathf.Lerp(_currentAngleX, _angleX, 1f / _lookSmooth);
@@ -154,9 +147,6 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     {
         if ((_verticalInput != 0f || _horizontalInput != 0f) && !_isJump)
         {
-            _verticalInput = Mathf.Clamp(_verticalInput, -_maxInputValue, _maxInputValue);
-            _horizontalInput = Mathf.Clamp(_horizontalInput, -_maxInputValue, _maxInputValue);
-
             if (_isStand)
             {
                 if (_verticalInput > 0f)
@@ -188,20 +178,11 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
                 _forwardBackMovement = _forwardBackMovement * 0.8f;
                 _rightLeftMovement = _rightLeftMovement * 0.8f;
             }
-
-            _rigidbody.AddRelativeForce(_rightLeftMovement, 0f, _forwardBackMovement, ForceMode.VelocityChange);
+            _rigidbody.velocity = transform.TransformDirection(new Vector3(_rightLeftMovement, _rigidbody.velocity.y, _forwardBackMovement));
         }
     }
 
-    private void DragController()
-    {
-        if (_isJump || _rigidbody.velocity.sqrMagnitude < 0.01f)
-            _rigidbody.drag = 0f;
-        else
-            _rigidbody.drag = _characterDrag;
-    }
-
-    private void Jump() //arrumar o pulo continuo, colocar um delay
+    private void Jump()
     {
         if (Grounded())
             _isJump = false;
@@ -209,7 +190,7 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
             _isJump = true;
 
         if (_jumpInput > 0f && _isStand && !_isJump)
-            _rigidbody.AddForce(0f, _jumpVelocity, 0f, ForceMode.VelocityChange);
+            _rigidbody.AddForce(0f, _jumpVelocity, 0f, ForceMode.Impulse);
     }
 
     private bool Grounded()
@@ -318,4 +299,51 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
 
     }
 
+    public int LookSensitivity
+    {
+        get
+        {
+            return _lookSensitivity;
+        }
+        set
+        {
+            _lookSensitivity = value;
+        }
+    }
+
+    public float ForwardSpeed
+    {
+        get
+        {
+            return _forwardSpeed;
+        }
+        set
+        {
+            _forwardSpeed = value;
+        }
+    }
+
+    public float BackSpeed
+    {
+        get
+        {
+            return _backSpeed;
+        }
+        set
+        {
+            _backSpeed = value;
+        }
+    }
+
+    public float StrafeSpeed
+    {
+        get
+        {
+            return _strafeSpeed;
+        }
+        set
+        {
+            _strafeSpeed = value;
+        }
+    }
 }
