@@ -37,9 +37,13 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     [SerializeField]
     private float _distanceToGrounded = 1.05f;
     [SerializeField]
-    private float _crounchHeight = 0.1f;
+    private float _crounchCamHeight = 0.5f;
     [SerializeField]
-    private float _proneHeight = -0.7f;
+    private float _proneCamHeight = 0f;
+    [SerializeField]
+    private float _crounchColliderHeight = 1.4f;
+    [SerializeField]
+    private float _proneColliderHeight = 1f;
     [SerializeField]
     [Range(1, 10)]
     private int _CrouchProneSmooth = 5;
@@ -51,7 +55,7 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     private int _leanAngle = 10;
     [Range(1, 50)]
     [SerializeField]
-    private int _leanSmooth = 15;
+    private int _leanSmooth = 7;
 
     private float _axisXInput;
     private float _axisYInput;
@@ -60,7 +64,8 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     private float _runInput;
     private float _jumpInput;
     private float _leanInput;
-    private float _standHeight;
+    private float _standCamHeight;
+    private float _standColliderHeight;
     private float _angleX;
     private float _angleY;
     private float _currentAngleX;
@@ -72,6 +77,7 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
     private bool _isStand;
     private bool _isJump;
     private float _crouchProneTarget;
+    private float _ColliderHeight;
     private float _leanTarget;
     private float _leanAngleTarget;
     private float _leanPositionLerpInterpolation;
@@ -92,8 +98,9 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         _isProne = false;
         _isStand = true;
         _isJump = false;
-        _standHeight = _cameraTransform.localPosition.y;
-        _crouchProneTarget = _standHeight;
+        _standCamHeight = _cameraTransform.localPosition.y;
+        _crouchProneTarget = _standCamHeight;
+        _standColliderHeight = transform.GetComponent<CapsuleCollider>().height;
         _canLean = 0;
     }
 
@@ -204,14 +211,16 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         {
             if (!_isCrouch)
             {
-                _crouchProneTarget = _crounchHeight;
+                _crouchProneTarget = _crounchCamHeight;
+                _ColliderHeight = _crounchColliderHeight;
                 _isCrouch = true;
                 _isProne = false;
                 _isStand = false;
             }
             else
             {
-                _crouchProneTarget = _standHeight;
+                _crouchProneTarget = _standCamHeight;
+                _ColliderHeight= _standColliderHeight;
                 _isCrouch = false;
                 _isStand = true;
             }
@@ -224,14 +233,16 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         {
             if (!_isProne)
             {
-                _crouchProneTarget = _proneHeight;
+                _crouchProneTarget = _proneCamHeight;
+                _ColliderHeight = _proneColliderHeight;
                 _isProne = true;
                 _isCrouch = false;
                 _isStand = false;
             }
             else
             {
-                _crouchProneTarget = _standHeight;
+                _crouchProneTarget = _standCamHeight;
+                _ColliderHeight = _standColliderHeight;
                 _isProne = false;
                 _isStand = true;
             }
@@ -244,12 +255,13 @@ public class FPSRigidbodyCharacterController : MonoBehaviour
         {
             float _cameraCurrentPosY = Mathf.Lerp(_cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
             _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x, _cameraCurrentPosY, _cameraTransform.localPosition.z);
+            transform.GetComponent<CapsuleCollider>().height = Mathf.Lerp(transform.GetComponent<CapsuleCollider>().height, _ColliderHeight, _CrouchProneSmooth * Time.deltaTime);
         }
     }
 
     private void Lean()
     {
-        if (_leanInput != 0f)
+        if (_leanInput != 0f && Input.GetButton("Zoom"))
         {
             if (_leanInput > 0f && _canLean >= 0)
             {

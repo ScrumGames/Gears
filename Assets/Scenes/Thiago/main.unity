@@ -303,6 +303,35 @@ Prefab:
       propertyPath: _msgText
       value: 
       objectReference: {fileID: 1556716908}
+    - target: {fileID: 114000010689920818, guid: e97dc6d173176e642852636903242edd,
+        type: 2}
+      propertyPath: _weapon
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011972097184, guid: e97dc6d173176e642852636903242edd,
+        type: 2}
+      propertyPath: _leanSmooth
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011908206288, guid: e97dc6d173176e642852636903242edd, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 136000013289423506, guid: e97dc6d173176e642852636903242edd,
+        type: 2}
+      propertyPath: m_Height
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011972097184, guid: e97dc6d173176e642852636903242edd,
+        type: 2}
+      propertyPath: _crounchHeight
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011972097184, guid: e97dc6d173176e642852636903242edd,
+        type: 2}
+      propertyPath: _proneHeight
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e97dc6d173176e642852636903242edd, type: 2}
   m_IsPrefabParent: 0
