@@ -1,24 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(CharacterController))]
+
 public class FPSCharacterController : MonoBehaviour
 {
-
     [SerializeField]
-    [Range (1, 50)]
+    [Range(1, 50)]
     private int _forwardSpeed = 5;
     [SerializeField]
     [Range(1, 50)]
-    private int _backSpeed = 3;
+    private int _backSpeed = 4;
     [SerializeField]
     [Range(1, 50)]
-    private int _strafeSpeed = 4;
+    private int _strafeSpeed = 5;
     [SerializeField]
     [Range(0, 10)]
     private float _crouchSpeed = 2;
     [SerializeField]
     [Range(0, 10)]
-    private float _proneSpeed = 0.8f;
+    private float _proneSpeed = 1f;
     [SerializeField]
     [Range(1, 10)]
     private int _runSpeedMultiplier = 2;
@@ -30,35 +31,33 @@ public class FPSCharacterController : MonoBehaviour
     private int _lookSmooth = 4;
     [SerializeField]
     [Range(1, 30)]
-    private int _jumpVelocity = 4;
+    private int _jumpSpeed = 5;
     [SerializeField]
-    private LayerMask _groundLayerMask;
+    private float _gravity = -9.81f;
     [SerializeField]
-    private float _distanceToGrounded = 1.05f;
+    private float _crounchHeight = 0.1f;
     [SerializeField]
-    private float _crounchHeight = 0.3f;
-    [SerializeField]
-    private float _proneHeight = 0.05f;
+    private float _proneHeight = -0.7f;
     [SerializeField]
     [Range(1, 10)]
     private int _CrouchProneSmooth = 5;
     [Range(0, 2)]
     [SerializeField]
-    private float _leanScale = 0.5f;
+    private float _leanDisplacement = 0.5f;
     [Range(0, 90)]
     [SerializeField]
-    private int _leanAngle = 15;
-    [Range(1, 30)]
+    private int _leanAngle = 10;
+    [Range(1, 50)]
     [SerializeField]
-    private int _leanSmooth = 10;
+    private int _leanSmooth = 15;
+
+	[SerializeField] private float _speed;
 
     private float _axisXInput;
     private float _axisYInput;
     private float _verticalInput;
     private float _horizontalInput;
-    private float _maxInputValue;
     private float _runInput;
-    private float _jumpInput;
     private float _leanInput;
     private float _standHeight;
     private float _angleX;
@@ -70,54 +69,54 @@ public class FPSCharacterController : MonoBehaviour
     private bool _isCrouch;
     private bool _isProne;
     private bool _isStand;
-    private bool _isJump;
+    private int _movementBeforeJump;
     private float _crouchProneTarget;
     private float _leanTarget;
     private float _leanAngleTarget;
     private float _leanPositionLerpInterpolation;
     private float _leanAngleLerpInterpolation;
+    private int _canLean;
+    private float _jumpMovement;
+	private NavMeshAgent _navMeshAgent;
 
-    private Transform _cameraTransform;
-    private Rigidbody _rigidbody;
+    private Transform cameraTransform;
+    private CharacterController _characterController;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        _cameraTransform = transform.GetChild(0).transform;
+        cameraTransform = transform.GetChild(0).transform;
         _currentAngleY = transform.rotation.y;
-        _currentAngleX = _cameraTransform.localRotation.x;
-        _rigidbody = GetComponent<Rigidbody>();
+        _currentAngleX = cameraTransform.localRotation.x;
+        _characterController = GetComponent<CharacterController>();
         _isCrouch = false;
         _isProne = false;
         _isStand = true;
-        _isJump = false;
-        _standHeight = _cameraTransform.localPosition.y;
+        _standHeight = cameraTransform.localPosition.y;
         _crouchProneTarget = _standHeight;
-        _maxInputValue = 0.1f;
+        _canLean = 0;
     }
+
+	void Awake()
+	{
+		_navMeshAgent = GetComponent<NavMeshAgent> ();
+	}
 
     void Update()
     {
         GetInput();
         PlayerLook();
+        PlayerMovement();
         Crouch();
         Prone();
         CrouchProneSmooth();
-        //Lean();
-    }
-
-    void FixedUpdate()
-    {
-        DragController();
-        PlayerMovement();
-        Jump();
+        Lean();
     }
 
     private void GetInput()
     {
         _axisXInput = Input.GetAxisRaw("Mouse X");
         _axisYInput = Input.GetAxisRaw("Mouse Y");
-        _jumpInput = Input.GetAxisRaw("Jump");
         _runInput = Input.GetAxisRaw("Run");
         _verticalInput = Input.GetAxis("Vertical");
         _horizontalInput = Input.GetAxis("Horizontal");
@@ -138,76 +137,112 @@ public class FPSCharacterController : MonoBehaviour
         temp[1] = _currentAngleY;
         transform.localEulerAngles = temp;
 
-        temp = _cameraTransform.localEulerAngles;
+        temp = cameraTransform.localEulerAngles;
         temp[0] = _currentAngleX;
-        _cameraTransform.localEulerAngles = temp;
+        cameraTransform.localEulerAngles = temp;
     }
 
     private void PlayerMovement()
     {
-        if ((_verticalInput != 0f || _horizontalInput != 0f) && !_isJump)
+        if (!_characterController.isGrounded)
+            _jumpMovement += _gravity * Time.deltaTime;
+        else
+            _jumpMovement = _gravity;
+
+        //Movement speed
+        if (_isStand)
         {
-            _verticalInput = Mathf.Clamp(_verticalInput, -_maxInputValue, _maxInputValue);
-            _horizontalInput = Mathf.Clamp(_horizontalInput, -_maxInputValue, _maxInputValue);
-
-            if (_isStand)
-            {
-                if (_verticalInput > 0f)
-                    _forwardBackMovement = _verticalInput * _forwardSpeed;
-                else
-                    _forwardBackMovement = _verticalInput * _backSpeed;
-
-                _rightLeftMovement = _horizontalInput * _strafeSpeed;
-
-                if (_runInput > 0f && _verticalInput > 0f)
-                {
-                    _forwardBackMovement = _forwardBackMovement * _runSpeedMultiplier;
-                    _rightLeftMovement = _rightLeftMovement * _runSpeedMultiplier;
-                }
-            }
-            else if (_isCrouch)
-            {
-                _forwardBackMovement = _verticalInput * _crouchSpeed;
-                _rightLeftMovement = _horizontalInput * _crouchSpeed;
-            }
+            //Forward and back
+            if (_verticalInput > 0f)
+                _forwardBackMovement = _verticalInput * _forwardSpeed;
             else
+                _forwardBackMovement = _verticalInput * _backSpeed;
+
+            _rightLeftMovement = _horizontalInput * _strafeSpeed;
+
+            //Run
+            if (_runInput > 0f && _verticalInput > 0f)
             {
-                _forwardBackMovement = _verticalInput * _proneSpeed;
-                _rightLeftMovement = _horizontalInput * _proneSpeed;
+                _forwardBackMovement = _forwardBackMovement * _runSpeedMultiplier;
+                _rightLeftMovement = _rightLeftMovement * _runSpeedMultiplier;
             }
 
-            _rigidbody.AddRelativeForce(_rightLeftMovement, 0f, _forwardBackMovement, ForceMode.VelocityChange);
-           // _rigidbody.velocity = new Vector3(_rightLeftMovement, 0, _forwardBackMovement);
+            //Jump
+            if (Input.GetButtonDown("Jump") && _characterController.isGrounded)
+            {
+                //Check if Character is moving and get the direction
+                //During the jump, the character just can move to direction that was moving
+                if (_verticalInput > 0f)
+                    _movementBeforeJump = 1;
+                else if (_horizontalInput > 0f)
+                    _movementBeforeJump = 2;
+                else if (_horizontalInput < 0f)
+                    _movementBeforeJump = 3;
+                else if (_verticalInput < 0f)
+                    _movementBeforeJump = 4;
+                else
+                    _movementBeforeJump = 5;
+
+                _jumpMovement = _jumpSpeed;
+            }
         }
-    }
-
-    private void DragController()
-    {
-        if (_isJump || _rigidbody.velocity.sqrMagnitude < 0.01f)
-            _rigidbody.drag = 0f;
+        //Crouch movement spped
+        else if (_isCrouch)
+        {
+            _forwardBackMovement = _verticalInput * _crouchSpeed;
+            _rightLeftMovement = _horizontalInput * _crouchSpeed;
+        }
+        //Prone movement speed
         else
-            _rigidbody.drag = 5f;
+        {
+            _forwardBackMovement = _verticalInput * _proneSpeed;
+            _rightLeftMovement = _horizontalInput * _proneSpeed;
+        }
+
+        //During the jump, the character just can move to direction that was moving
+        if (!_characterController.isGrounded)
+        {
+            switch (_movementBeforeJump)
+            {
+                case 1:
+                    _rightLeftMovement = 0f;
+                    if (_forwardBackMovement < 0f)
+                        _forwardBackMovement = 0f;
+                    break;
+                case 2:
+                    _forwardBackMovement = 0f;
+                    if (_rightLeftMovement < 0f)
+                        _rightLeftMovement = 0f;
+                    break;
+                case 3:
+                    _forwardBackMovement = 0f;
+                    if (_rightLeftMovement > 0f)
+                        _rightLeftMovement = 0f;
+                    break;
+                case 4:
+                    _rightLeftMovement = 0f;
+                    if (_forwardBackMovement > 0f)
+                        _forwardBackMovement = 0f;
+                    break;
+                case 5:
+                    _forwardBackMovement = 0f;
+                    _rightLeftMovement = 0f;
+                    break;
+            }
+        }
+
+        //Moving character relative direction
+        Vector3 moveDirection = new Vector3(_rightLeftMovement, _jumpMovement, _forwardBackMovement);
+        moveDirection = transform.TransformDirection(moveDirection);
+
+        //moving
+        _characterController.Move(moveDirection * Time.deltaTime);
+        
     }
-
-    private void Jump() //arrumar o pulo continuo, colocar um delay
-    {
-        if (Grounded())
-            _isJump = false;
-        else
-            _isJump = true;
-
-        if (_jumpInput > 0f && _isStand && !_isJump)
-            _rigidbody.AddForce(0f, _jumpVelocity, 0f, ForceMode.VelocityChange);
-    }
-
-    private bool Grounded()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, _distanceToGrounded, _groundLayerMask);
-    }
-
+		
     private void Crouch()
     {
-        if(Input.GetButtonDown("Crouch"))
+        if (Input.GetButtonDown("Crouch"))
         {
             if (!_isCrouch)
             {
@@ -247,10 +282,10 @@ public class FPSCharacterController : MonoBehaviour
 
     private void CrouchProneSmooth()
     {
-        if (_cameraTransform.localPosition.y != _crouchProneTarget)
+        if (cameraTransform.localPosition.y != _crouchProneTarget)
         {
-            float _cameraCurrentPosY = Mathf.Lerp(_cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
-            _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x, _cameraCurrentPosY, _cameraTransform.localPosition.z);
+            float _cameraCurrentPosY = Mathf.Lerp(cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
+            cameraTransform.localPosition = new Vector3(cameraTransform.localPosition.x, _cameraCurrentPosY, cameraTransform.localPosition.z);
         }
     }
 
@@ -258,15 +293,17 @@ public class FPSCharacterController : MonoBehaviour
     {
         if (_leanInput != 0f)
         {
-            if (_leanInput > 0f)
+            if (_leanInput > 0f && _canLean >= 0)
             {
-                _leanTarget = _leanScale;
-                _leanAngleTarget = -_leanAngle;
+                _leanTarget = _leanDisplacement;
+                _leanAngleTarget = 360f - _leanAngle;
+                _canLean = 1;
             }
-            else
+            else if (_leanInput < 0f && _canLean <= 0)
             {
-                _leanTarget = -_leanScale;
+                _leanTarget = -_leanDisplacement;
                 _leanAngleTarget = _leanAngle;
+                _canLean = -1;
             }
         }
         else
@@ -275,25 +312,80 @@ public class FPSCharacterController : MonoBehaviour
             _leanAngleTarget = 0f;
         }
 
-        if (_cameraTransform.localPosition.x != _leanTarget)
+        if (_leanAngleTarget == 0f && Mathf.Round(cameraTransform.localEulerAngles.z) == 0f)
+            _canLean = 0;
+
+        if (System.Math.Round(cameraTransform.localPosition.x, 1) != _leanTarget)
         {
-            float _cameraCurrentPosX = Mathf.Lerp(_cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
-            _cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, _cameraTransform.localPosition.y, _cameraTransform.localPosition.z);
-            _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime;
+            float _cameraCurrentPosX = Mathf.Lerp(cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
+            cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, cameraTransform.localPosition.y, cameraTransform.localPosition.z);
+            _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
             _leanPositionLerpInterpolation = 0f;
 
-        if(_cameraTransform.localEulerAngles.z != _leanAngleTarget)
+        if (Mathf.Round(cameraTransform.localEulerAngles.z) != _leanAngleTarget)
         {
-            float _cameraCurrentAngle = Mathf.Lerp(_cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
-            _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
-            _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime;
-            Debug.Log(_cameraTransform.localEulerAngles.z);
+            if (_leanAngleTarget > 270f && Mathf.Round(cameraTransform.localEulerAngles.z) == 0f)
+                cameraTransform.localEulerAngles = new Vector3(cameraTransform.localEulerAngles.x, cameraTransform.localEulerAngles.y, 359f);
+
+            if (cameraTransform.localEulerAngles.z > 270f && _leanAngleTarget == 0f)
+                _leanAngleTarget = 360f;
+
+            float _cameraCurrentAngle = Mathf.Lerp(cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
+            cameraTransform.localEulerAngles = new Vector3(cameraTransform.localEulerAngles.x, cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
+            _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
             _leanAngleLerpInterpolation = 0f;
 
     }
 
+    public int LookSensitivity
+    {
+        get
+        {
+            return _lookSensitivity;
+        }
+        set
+        {
+            _lookSensitivity = value;
+        }
+    }
+
+    public int ForwardSpeed
+    {
+        get
+        {
+            return _forwardSpeed;
+        }
+        set
+        {
+            _forwardSpeed = value;
+        }
+    }
+
+    public int BackSpeed
+    {
+        get
+        {
+            return _backSpeed;
+        }
+        set
+        {
+            _backSpeed = value;
+        }
+    }
+
+    public int StrafeSpeed
+    {
+        get
+        {
+            return _strafeSpeed;
+        }
+        set
+        {
+            _strafeSpeed = value;
+        }
+    }
 }

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78e7c4fefa30d4a3f95d455a5e570bd1, type: 3}
+  m_Name: Weapon Data Config
+  m_EditorClassIdentifier: 
+  _weaponConfig:
+  - name: Shotgun
+    ammo: 50
+    damage: 25
+    fireRate: 1
+    cooldown: 5
+    range: 3
+    weaponType: 2
+    weaponHierarchy: 0
+    weaponAtackType: 1
+  - name: SMG
+    ammo: 35
+    damage: 15
+    fireRate: 5
+    cooldown: 3
+    range: 10
+    weaponType: 0
+    weaponHierarchy: 0
+    weaponAtackType: 1
+  - name: RPG
+    ammo: 4
+    damage: 50
+    fireRate: 1
+    cooldown: 10
+    range: 30
+    weaponType: 1
+    weaponHierarchy: 2
+    weaponAtackType: 1
