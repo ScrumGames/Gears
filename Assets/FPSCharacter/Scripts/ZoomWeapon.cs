@@ -18,9 +18,7 @@ public class ZoomWeapon : MonoBehaviour {
 
     private GameObject _shotgun;
     private Vector3 _shotgunOriginalPosition;
-    private Vector3 _shotgunOriginalAngle;
     private Vector3 _shotgunZoomPosition;
-    private Vector3 _shotgunZoomAngle;
     private Camera _camera;
     private float _originalCameraFOV;
     private int _originalLookSensivity;
@@ -32,9 +30,7 @@ public class ZoomWeapon : MonoBehaviour {
     {
         _shotgun = transform.GetChild(0).GetChild(1).gameObject;
         _shotgunOriginalPosition = _shotgun.transform.localPosition;
-        _shotgunOriginalAngle = _shotgun.transform.localEulerAngles;
         _shotgunZoomPosition = new Vector3(0, -0.320f, 0.12f);
-        _shotgunZoomAngle = new Vector3(0, -90, 0);
         _camera = transform.GetChild(0).GetComponent<Camera>();
         _originalCameraFOV = _camera.fieldOfView;
         _originalLookSensivity = transform.GetComponent<FPSCharacterController>().LookSensitivity;

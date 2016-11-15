@@ -35,9 +35,13 @@ public class FPSCharacterController : MonoBehaviour
     [SerializeField]
     private float _gravity = -9.81f;
     [SerializeField]
-    private float _crounchHeight = 0.1f;
+    private float _crounchCamHeight = 0.5f;
     [SerializeField]
-    private float _proneHeight = -0.7f;
+    private float _proneCamHeight = 0f;
+    [SerializeField]
+    private float _crounchColliderHeight = 1.4f;
+    [SerializeField]
+    private float _proneColliderHeight = 1f;
     [SerializeField]
     [Range(1, 10)]
     private int _CrouchProneSmooth = 5;
@@ -51,15 +55,14 @@ public class FPSCharacterController : MonoBehaviour
     [SerializeField]
     private int _leanSmooth = 15;
 
-	[SerializeField] private float _speed;
-
     private float _axisXInput;
     private float _axisYInput;
     private float _verticalInput;
     private float _horizontalInput;
     private float _runInput;
     private float _leanInput;
-    private float _standHeight;
+    private float _standCamHeight;
+    private float _standColliderHeight;
     private float _angleX;
     private float _angleY;
     private float _currentAngleX;
@@ -71,36 +74,32 @@ public class FPSCharacterController : MonoBehaviour
     private bool _isStand;
     private int _movementBeforeJump;
     private float _crouchProneTarget;
+    private float _ColliderHeight;
     private float _leanTarget;
     private float _leanAngleTarget;
     private float _leanPositionLerpInterpolation;
     private float _leanAngleLerpInterpolation;
     private int _canLean;
     private float _jumpMovement;
-	private NavMeshAgent _navMeshAgent;
 
-    private Transform cameraTransform;
+    private Transform _cameraTransform;
     private CharacterController _characterController;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        cameraTransform = transform.GetChild(0).transform;
+        _cameraTransform = transform.GetChild(0).transform;
         _currentAngleY = transform.rotation.y;
-        _currentAngleX = cameraTransform.localRotation.x;
+        _currentAngleX = _cameraTransform.localRotation.x;
         _characterController = GetComponent<CharacterController>();
         _isCrouch = false;
         _isProne = false;
         _isStand = true;
-        _standHeight = cameraTransform.localPosition.y;
-        _crouchProneTarget = _standHeight;
+        _standCamHeight = _cameraTransform.localPosition.y;
+        _crouchProneTarget = _standCamHeight;
+        _standColliderHeight = _characterController.height;
         _canLean = 0;
     }
-
-	void Awake()
-	{
-		_navMeshAgent = GetComponent<NavMeshAgent> ();
-	}
 
     void Update()
     {
@@ -137,9 +136,9 @@ public class FPSCharacterController : MonoBehaviour
         temp[1] = _currentAngleY;
         transform.localEulerAngles = temp;
 
-        temp = cameraTransform.localEulerAngles;
+        temp = _cameraTransform.localEulerAngles;
         temp[0] = _currentAngleX;
-        cameraTransform.localEulerAngles = temp;
+        _cameraTransform.localEulerAngles = temp;
     }
 
     private void PlayerMovement()
@@ -239,21 +238,23 @@ public class FPSCharacterController : MonoBehaviour
         _characterController.Move(moveDirection * Time.deltaTime);
         
     }
-		
+
     private void Crouch()
     {
         if (Input.GetButtonDown("Crouch"))
         {
             if (!_isCrouch)
             {
-                _crouchProneTarget = _crounchHeight;
+                _crouchProneTarget = _crounchCamHeight;
+                _ColliderHeight = _crounchColliderHeight;
                 _isCrouch = true;
                 _isProne = false;
                 _isStand = false;
             }
             else
             {
-                _crouchProneTarget = _standHeight;
+                _crouchProneTarget = _standCamHeight;
+                _ColliderHeight = _standColliderHeight;
                 _isCrouch = false;
                 _isStand = true;
             }
@@ -266,14 +267,16 @@ public class FPSCharacterController : MonoBehaviour
         {
             if (!_isProne)
             {
-                _crouchProneTarget = _proneHeight;
+                _crouchProneTarget = _proneCamHeight;
+                _ColliderHeight = _proneColliderHeight;
                 _isProne = true;
                 _isCrouch = false;
                 _isStand = false;
             }
             else
             {
-                _crouchProneTarget = _standHeight;
+                _crouchProneTarget = _standCamHeight;
+                _ColliderHeight = _standColliderHeight;
                 _isProne = false;
                 _isStand = true;
             }
@@ -282,16 +285,17 @@ public class FPSCharacterController : MonoBehaviour
 
     private void CrouchProneSmooth()
     {
-        if (cameraTransform.localPosition.y != _crouchProneTarget)
+        if (_cameraTransform.localPosition.y != _crouchProneTarget)
         {
-            float _cameraCurrentPosY = Mathf.Lerp(cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
-            cameraTransform.localPosition = new Vector3(cameraTransform.localPosition.x, _cameraCurrentPosY, cameraTransform.localPosition.z);
+            float _cameraCurrentPosY = Mathf.Lerp(_cameraTransform.localPosition.y, _crouchProneTarget, _CrouchProneSmooth * Time.deltaTime);
+            _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x, _cameraCurrentPosY, _cameraTransform.localPosition.z);
+            _characterController.height = Mathf.Lerp(_characterController.height, _ColliderHeight, _CrouchProneSmooth * Time.deltaTime);
         }
     }
 
     private void Lean()
     {
-        if (_leanInput != 0f)
+        if (_leanInput != 0f && Input.GetButton("Zoom"))
         {
             if (_leanInput > 0f && _canLean >= 0)
             {
@@ -312,28 +316,28 @@ public class FPSCharacterController : MonoBehaviour
             _leanAngleTarget = 0f;
         }
 
-        if (_leanAngleTarget == 0f && Mathf.Round(cameraTransform.localEulerAngles.z) == 0f)
+        if (_leanAngleTarget == 0f && Mathf.Round(_cameraTransform.localEulerAngles.z) == 0f)
             _canLean = 0;
 
-        if (System.Math.Round(cameraTransform.localPosition.x, 1) != _leanTarget)
+        if (System.Math.Round(_cameraTransform.localPosition.x, 1) != _leanTarget)
         {
-            float _cameraCurrentPosX = Mathf.Lerp(cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
-            cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, cameraTransform.localPosition.y, cameraTransform.localPosition.z);
+            float _cameraCurrentPosX = Mathf.Lerp(_cameraTransform.localPosition.x, _leanTarget, _leanPositionLerpInterpolation);
+            _cameraTransform.localPosition = new Vector3(_cameraCurrentPosX, _cameraTransform.localPosition.y, _cameraTransform.localPosition.z);
             _leanPositionLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
             _leanPositionLerpInterpolation = 0f;
 
-        if (Mathf.Round(cameraTransform.localEulerAngles.z) != _leanAngleTarget)
+        if (Mathf.Round(_cameraTransform.localEulerAngles.z) != _leanAngleTarget)
         {
-            if (_leanAngleTarget > 270f && Mathf.Round(cameraTransform.localEulerAngles.z) == 0f)
-                cameraTransform.localEulerAngles = new Vector3(cameraTransform.localEulerAngles.x, cameraTransform.localEulerAngles.y, 359f);
+            if (_leanAngleTarget > 270f && Mathf.Round(_cameraTransform.localEulerAngles.z) == 0f)
+                _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, 359f);
 
-            if (cameraTransform.localEulerAngles.z > 270f && _leanAngleTarget == 0f)
+            if (_cameraTransform.localEulerAngles.z > 270f && _leanAngleTarget == 0f)
                 _leanAngleTarget = 360f;
 
-            float _cameraCurrentAngle = Mathf.Lerp(cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
-            cameraTransform.localEulerAngles = new Vector3(cameraTransform.localEulerAngles.x, cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
+            float _cameraCurrentAngle = Mathf.Lerp(_cameraTransform.localEulerAngles.z, _leanAngleTarget, _leanAngleLerpInterpolation);
+            _cameraTransform.localEulerAngles = new Vector3(_cameraTransform.localEulerAngles.x, _cameraTransform.localEulerAngles.y, _cameraCurrentAngle);
             _leanAngleLerpInterpolation += _leanSmooth * Time.deltaTime * 0.1f;
         }
         else
